@@ -1,0 +1,13 @@
+[Unit]
+Description=Start DI Plotter service
+
+[Service]
+WorkingDirectory=/home/tl/apps/PlateAnalyzer
+Type=simple
+ExecStart=/bin/bash run.sh
+KillMode=control-group
+User=tl
+Group=tl
+
+[Install]
+WantedBy=multi-user.target

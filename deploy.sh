@@ -1,10 +1,17 @@
 #!/bin/sh
 
-target=toolbox:apps/PlateAnalyzer
-source=$GA_PATH/Code/PlateAnalyzer
+target=gamap:apps/PlateAnalyzer
+source=~/git/ga-di-plotter
 
-rsync -lrv \
-      --delete "$source/" "$target/" \
+cd $source;
+
+rsync -lruv \
+      --delete \
       --exclude deploy.sh \
       --exclude http_redirect.py \
-      --exclude .Rprofile
+      --exclude "packrat/lib*" \
+      --exclude .git \
+      --exclude .gitignore \
+      --delete-excluded \
+      "$source/" "$target/" 
+

@@ -12,6 +12,4 @@ rsync -lruv \
       --exclude "packrat/lib*" \
       --exclude .git \
       --exclude .gitignore \
-      --delete-excluded \
-      "$source/" "$target/" 
-
+      "$source/" "$target/"

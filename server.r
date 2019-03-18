@@ -7,6 +7,8 @@ library(ga.utils)
 library(ga.gamapqc)
 library(foreach)
 
+library(bettertrace)
+
 testfile <- "~/GA/Experiments/Q2-011/Data/01-Raw/Q2-011 L1802_II LX1734 KrG.csv"
 
 run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {

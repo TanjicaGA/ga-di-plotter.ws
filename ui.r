@@ -105,7 +105,25 @@ shinyUI(fluidPage(
 
         ),
 
-        ## selected = "QC Overview"
+        tabPanel(
+
+            "Doctor's Data",
+
+            wellPanel(
+                fluidRow(
+                    ## column( 12, uiOutput( "dd_qcc_plots" ) )
+                    ## column( 12, plotOutput( "DDqccQCC23_A" ) )
+                    div(
+                        id="dd-qc-container",
+                        uiOutput(
+                            outputId="dd_qc_plots"
+                        )
+                    )
+                )
+            )
+        ),
+
+        ## selected = "Doctor's Data"
         selected = "DI-Plot"
 
     )

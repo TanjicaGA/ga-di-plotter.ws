@@ -5,11 +5,15 @@ library(devtools)
 library(ga.gamap)
 library(ga.utils)
 library(ga.gamapqc)
+library(ga.software.dd)
 library(foreach)
+library(ggplot2)
+library(purrr)
 
 library(bettertrace)
 
-testfile <- "~/GA/Experiments/Q2-011/Data/01-Raw/Q2-011 L1802_II LX1734 KrG.csv"
+## testfile <- "~/GA/Experiments/Q2-011/Data/01-Raw/Q2-011 L1802_II LX1734 KrG.csv"
+testfile <- "~/B/Projects/DoctorsData/Data/Fresh Sample Ver Study no.1_20190831_113108.csv"
 
 run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 
@@ -31,67 +35,7 @@ run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 ## Define server logic required to draw a histogram
 shinyServer(function(input, output) {
 
-    plateData <- reactive({
-
-        bc.file <- input$bc_file
-        ## bc.file$datapath <- testfile
-
-        if( !is.null(bc.file$datapath) ) {
-            gamap(
-                x       = bc.file$datapath,
-                stop.at = "file"
-            )
-        }
-        else
-            NULL
-
-    })
-
-    di <- reactive({
-
-        pd <- plateData()
-
-        if( !is.null(pd) ) {
-            run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
-        }
-
-    })
-
-    bt <- reactive({
-
-        pd <- plateData()
-
-        if( !is.null(pd) ) {
-            b <- gamap.probe.levels(
-                x       = pd,
-                start.from = "file",
-                batch   = input$kitlot,
-                qc.check.qcc30 = input$qcc30_filter
-            )
-            bl <- bacteria.limits()
-            colnames(b) <- bl$Bacteria
-
-            sn <- rownames(b)
-
-            b[ !grepl("QCC(30|29)",sn), ]
-
-        }
-        else {
-            NULL
-        }
-
-    })
-
-    din <- reactive({
-
-        pd <- plateData()
-
-        if( !is.null( pd )  ) {
-            run.gamap.from.plate.data( x=pd, input)
-        }
-
-    })
-
+    ## FUNCTIONS
     qcc <- function(qn) {
 
         pd <- plateData()
@@ -114,7 +58,6 @@ shinyServer(function(input, output) {
 
         }
     }
-
     qc.check <- function( qn, probe, value, platform ) {
 
         qcset <- gamap.qc.ranges(platform)
@@ -124,7 +67,6 @@ shinyServer(function(input, output) {
         }
 
     }
-
     qctable <- function(qn) {
 
         pd <- plateData()
@@ -183,18 +125,70 @@ shinyServer(function(input, output) {
 
     }
 
-    output$qcTableQCC30 <- renderTable(qctable("QCC30"), digits=1)
-    output$qcTableQCC29 <- renderTable(qctable("QCC29"), digits=1)
-    output$qcTableQCC23 <- renderTable(qctable("QCC23"), digits=1)
-    output$qcTableQCC33 <- renderTable(qctable("QCC33"), digits=1)
+    plateData <- reactive({
 
-    output$QCC23table <- renderTable(qcc("QCC23"))
-    output$QCC33table <- renderTable(qcc("QCC33"))
-    output$QCC29table <- renderTable(qcc("QCC29"))
-    output$QCC30table <- renderTable(qcc("QCC30"))
+        ## print( bc.file )
+        bc.file <- input$bc_file
+        ## bc.file$datapath <- testfile
+        ## bc.file$name <- basename(testfile)
+
+
+        if( !is.null(bc.file$datapath) ) {
+            gamap(
+                x       = bc.file$datapath,
+                stop.at = "file"
+            )
+        }
+        else
+            NULL
+
+    })
+    di <- reactive({
+
+        pd <- plateData()
+
+        if( !is.null(pd) ) {
+            run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
+        }
+
+    })
+    bt <- reactive({
+
+        pd <- plateData()
+
+        if( !is.null(pd) ) {
+            b <- gamap.probe.levels(
+                x       = pd,
+                start.from = "file",
+                batch   = input$kitlot,
+                qc.check.qcc30 = input$qcc30_filter
+            )
+            bl <- bacteria.limits()
+            colnames(b) <- bl$Bacteria
+
+            sn <- rownames(b)
+
+            b[ !grepl("QCC(30|29)",sn), ]
+
+        }
+        else {
+            NULL
+        }
+
+    })
+    din <- reactive({
+
+        pd <- plateData()
+
+        if( !is.null( pd )  ) {
+            run.gamap.from.plate.data( x=pd, input)
+        }
+
+    })
+
+    ## Page 1: DI table, BT and DI-Plot:
 
     output$BacteriaTable <- renderTable( bt(), digits=0, rownames=TRUE )
-
     i.qcc <- reactive( grepl( "^QCC", names(din()) ) )
 
     for( n in "Other" ) {
@@ -245,25 +239,88 @@ shinyServer(function(input, output) {
         }
 
     })
-
     output$downloadResults <- downloadHandler(
 
         filename = function() {
-        sub( "\\.csv$", "-results.csv", input$bc_file, ignore.case=TRUE )
-    },
+            sub( "\\.csv$", "-results.csv", input$bc_file, ignore.case=TRUE )
+        },
 
-    content = function(file) {
-        d <- din()
-        d <- d[ !grepl("QCC(30|29)",names(d)) ]
-        b <- bt()
-        bl <- bacteria.limits()
-        colnames(b) <- probe.numbers( bl$Probe )
-        if( !is.null(d) && !is.null(b) ) {
-            dd <- cbind.data.frame( Sample=names(d), DI=d, b )
-            write.csv( dd, file, row.names=FALSE )
+        content = function(file) {
+            d <- din()
+            d <- d[ !grepl("QCC(30|29)",names(d)) ]
+            b <- bt()
+            bl <- bacteria.limits()
+            colnames(b) <- probe.numbers( bl$Probe )
+            if( !is.null(d) && !is.null(b) ) {
+                dd <- cbind.data.frame( Sample=names(d), DI=d, b )
+                write.csv( dd, file, row.names=FALSE )
+            }
         }
-    }
 
     )
+
+    ## Page 2: QC tables
+
+    output$qcTableQCC30 <- renderTable(qctable("QCC30"), digits=1)
+    output$qcTableQCC29 <- renderTable(qctable("QCC29"), digits=1)
+    output$qcTableQCC23 <- renderTable(qctable("QCC23"), digits=1)
+    output$qcTableQCC33 <- renderTable(qctable("QCC33"), digits=1)
+
+    output$QCC23table <- renderTable(qcc("QCC23"))
+    output$QCC33table <- renderTable(qcc("QCC33"))
+    output$QCC29table <- renderTable(qcc("QCC29"))
+    output$QCC30table <- renderTable(qcc("QCC30"))
+
+    ## Page 3: DD
+    plot_dd_qc_sample <- function( sname ) {
+        req(!is.null(plateData()))
+        pd <- plateData()
+        rx <- paste0( "^\\Q", sname, "\\E$" )
+        plot_abundancy_qc( pd, start.from="file", batch=input$kitlot, sample_rx = rx ) + ggtitle( sname )
+    }
+
+    dd_qc_plots <- eventReactive( input$bc_file, {
+
+        req(!is.null(plateData()))
+
+        pd <- plateData()
+        set.qcc.indeces(pd, verbose=FALSE)
+        l <- lapply(
+            pd$Sample[ c(which(i.qcc23),which(i.qcc33)) ],
+            plot_dd_qc_sample
+        )
+        names(l) <- pd$Sample[ c(which(i.qcc23),which(i.qcc33)) ]
+
+        l
+
+    })
+
+    observeEvent( input$bc_file, {
+        req(dd_qc_plots())
+        l <- dd_qc_plots()
+        iwalk( l, ~{
+            output_name <- paste0( "dd-qc-plot-", .y )
+            output[[output_name]] <- renderPlot(.x)
+        })
+    })
+
+    output$dd_qc_plots <- renderUI({
+
+        req( dd_qc_plots() )
+
+        p_list <- imap( dd_qc_plots(), ~{
+
+            tagList(
+                plotOutput(
+                    outputId = paste0("dd-qc-plot-",.y)
+                ),
+                br()
+            )
+        })
+
+        tagList(p_list)
+
+    })
+
 
 })

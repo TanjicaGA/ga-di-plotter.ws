@@ -10,7 +10,7 @@ start () {
 
 start
 
-inotifywait -mr $WATCHED_DIR --format '%e %f' \
+inotifywait -m $WATCHED_DIR --format '%e %f' \
   -e modify -e delete -e move -e create \
   | while read event file; do
 

@@ -71,7 +71,7 @@ shinyServer(function(input, output, session) {
     ## FUNCTIONS
     qcc <- function(qn) {
 
-        req(pd <- plateData())
+        pd <- req(plateData())
 
         dd <- data.frame(
             QCC    = pd$Sample,
@@ -98,7 +98,7 @@ shinyServer(function(input, output, session) {
     }
     qctable <- function(qn) {
 
-        req(pd <- plateData())
+        pd <- req(plateData())
 
         platform <- pd$Platform[1]
 
@@ -154,9 +154,12 @@ shinyServer(function(input, output, session) {
         names(probeAnnotations)[ j ]
     }
     ddQcTables <- function( probemode="probe" ) {
-        req(pd <- plateData())
+
+        pd <- req(plateData())
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE )
         qc.data <- attr( qc, "qc.data" )[["1"]]
+
+        say( jsonlite::toJSON( qc.data, pretty=TRUE, auto_unbox=TRUE ))
 
         sum.probes <- function( .x, limit, cumsum=TRUE ) {
             l <- length( .x$probes[[limit]] )
@@ -177,6 +180,11 @@ shinyServer(function(input, output, session) {
             return( p )
         }
 
+        set.criteria <- function( set ) {
+            l <- bacteria.table.qc.parameters()[[set]]$limits
+            paste( imap_chr( l, ~{ paste0( paste0("[ ±",.y), " <= " , .x, " ]" ) } ), collapse=" & " )
+        }
+
         q <- imap_dfr( qc.data, ~{
             cbind.data.frame(
                 Set = .y,
@@ -186,7 +194,9 @@ shinyServer(function(input, output, session) {
                 "±3" = imap_int( .x, ~ sum.probes(.x,"±3") ),
                 "±1 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±1"),collapse=", ") ),
                 "±2 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±2"),collapse=", ") ),
-                "±3 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±3"),collapse=", ") )
+                "±3 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±3"),collapse=", ") ),
+                Result = c( "Fail", "Pass" )[ 1+imap_lgl( .x, ~ .x$qc ) ],
+                Criteria = set.criteria( .y )
             )
         })
         q$Set[ duplicated(q$Set) ] <- ""
@@ -298,10 +308,8 @@ shinyServer(function(input, output, session) {
 
     observeEvent( input_file(), {
         if( is.null(input_file()) ) {
-            print( "HIDING IT" )
             shinyjs::hideElement( id="download-button-column" )
         } else {
-            print( "SHOWING IT" )
             shinyjs::showElement( id="download-button-column" )
         }
     })
@@ -321,8 +329,7 @@ shinyServer(function(input, output, session) {
 
     ## Page 3: DD
     plot_dd_qc_sample <- function( sname ) {
-        req(!is.null(plateData()))
-        pd <- plateData()
+        pd <- req(plateData())
         rx <- paste0( "^\\Q", sname, "\\E$" )
         plot_abundancy_qc( pd, start.from="file", batch=input$kitlot, sample_rx = rx, probenames=currentProbeAnnotation() ) + ggtitle( sname )
     }
@@ -330,9 +337,7 @@ shinyServer(function(input, output, session) {
     ## dd_qc_plots <- eventReactive( input$bc_file, {
     dd_qc_plots <- reactive( {
 
-        req(!is.null(plateData()))
-
-        pd <- plateData()
+        pd <- req(plateData())
         set.qcc.indeces(pd, verbose=FALSE)
         l <- lapply(
             pd$Sample[ c(which(i.qcc23),which(i.qcc33)) ],
@@ -346,8 +351,7 @@ shinyServer(function(input, output, session) {
 
     ## observeEvent( input$bc_file, {
     observe({
-        req(dd_qc_plots())
-        l <- dd_qc_plots()
+        l <- req(dd_qc_plots())
         iwalk( l, ~{
             output_name <- paste0( "dd-qc-plot-", .y )
             output[[output_name]] <- renderPlot(.x)
@@ -356,9 +360,9 @@ shinyServer(function(input, output, session) {
 
     output$dd_qc_plots <- renderUI({
 
-        req( dd_qc_plots() )
+        l <- req( dd_qc_plots() )
 
-        p_list <- imap( dd_qc_plots(), ~{
+        p_list <- imap( l, ~{
 
             tagList(
                 plotOutput(

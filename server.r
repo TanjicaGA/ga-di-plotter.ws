@@ -9,6 +9,11 @@ library(ga.software.dd)
 library(foreach)
 library(ggplot2)
 library(purrr)
+library(stringr)
+library(ga.software)
+library(shinyjs)
+
+options( stringsAsFactors=FALSE )
 
 library(bettertrace)
 
@@ -32,31 +37,55 @@ run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 
 }
 
+translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
+    mode <- match.arg( mode )
+    prn <- paste( probe.numbers( probes ) )
+    switch(
+        mode,
+        probe = probe.codes(probes),
+        phylum = prn,
+        bacteria = unlist(report.bacteria.names())[prn]
+    )
+}
+
+DEBUG <- FALSE
+
 ## Define server logic required to draw a histogram
-shinyServer(function(input, output) {
+shinyServer(function(input, output, session) {
+
+    probeAnnotations <- c(
+        probe="Probe Codes",
+        phylum="Phylum Numbers",
+        bacteria="Bacteria Names"
+    )
+
+    input_file <- function() {
+        b <- input$bc_file
+        if( DEBUG ) {
+            b$datapath <- testfile
+            b$name <- basename(testfile)
+        }
+        b
+    }
 
     ## FUNCTIONS
     qcc <- function(qn) {
 
-        pd <- plateData()
+        req(pd <- plateData())
 
-        if(!is.null(pd)) {
+        dd <- data.frame(
+            QCC    = pd$Sample,
+            DI        = din(),
+            row.names = NULL
+        )
+        nn <- dd$QCC
 
-            dd <- data.frame(
-                QCC    = pd$Sample,
-                DI        = din(),
-                row.names = NULL
-            )
-            nn <- dd$QCC
+        i <- grepl( paste0("^",qn), nn )
 
-            i <- grepl( paste0("^",qn), nn )
+        d <- dd[i,]
+        names(d)[1] <- qn
 
-            d <- dd[i,]
-            names(d)[1] <- qn
-
-            return( d )
-
-        }
+        return( d )
     }
     qc.check <- function( qn, probe, value, platform ) {
 
@@ -69,121 +98,137 @@ shinyServer(function(input, output) {
     }
     qctable <- function(qn) {
 
-        pd <- plateData()
+        req(pd <- plateData())
 
-        if( !is.null(pd) ) {
+        platform <- pd$Platform[1]
 
-            platform <- pd$Platform[1]
+        pd2 <- pd[ grep( paste0("^",qn), pd$Sample ),  ]
 
-            pd2 <- pd[ grep( paste0("^",qn), pd$Sample ),  ]
+        i <- grep( "BLANK|UNI05|HYC01", colnames(pd2), value=TRUE )
+        pd3 <- pd2[, c("Sample","Row","Col","Well",i)]
+        xr <- probe.data( pd2 )
 
-            i <- grep( "BLANK|UNI05|HYC01", colnames(pd2), value=TRUE )
-            pd3 <- pd2[, c("Sample","Row","Col","Well",i)]
-            xr <- probe.data( pd2 )
+        if( platform == "Lx200" ) {
+            pd3 <- pd3[, colnames(pd3) %!~% "BLANK[12]" ]
+            xr <- xr[, colnames(xr) %!in% lx200.missing.probes() ]
+        }
 
-            if( platform == "Lx200" ) {
-                pd3 <- pd3[, colnames(pd3) %!~% "BLANK[12]" ]
-                xr <- xr[, colnames(xr) %!in% lx200.missing.probes() ]
+        pd3$Total <- rowSums(xr, na.rm=TRUE)
+
+        o <- order(
+            pd3$Sample %!~% "^QCC30",
+            pd3$Sample %!~% "^QCC29",
+            pd3$Sample %!~% "^QCC23",
+            pd3$Sample %!~% "^QCC33"
+        )
+
+        pd4 <- pd3[o,]
+
+        for( v in c("Row","Col","Well") ) {
+            pd4[,v] <- paste(pd4[,v])
+        }
+
+        cn <- colnames(pd4)
+
+        pd5 <- foreach( i=1:ncol(pd4), .combine = cbind.data.frame ) %do% {
+            v <- pd4[,i]
+            d <- data.frame(v=v)
+            colnames(d) <- cn[i]
+
+            if( cn[i] == "UNI05" ) {
+                d <- cbind.data.frame( d, "" )
+                colnames(d)[2] <- "?"
             }
 
-            pd3$Total <- rowSums(xr, na.rm=TRUE)
 
-            o <- order(
-                pd3$Sample %!~% "^QCC30",
-                pd3$Sample %!~% "^QCC29",
-                pd3$Sample %!~% "^QCC23",
-                pd3$Sample %!~% "^QCC33"
-            )
-
-            pd4 <- pd3[o,]
-
-            for( v in c("Row","Col","Well") ) {
-                pd4[,v] <- paste(pd4[,v])
-            }
-
-            cn <- colnames(pd4)
-
-            pd5 <- foreach( i=1:ncol(pd4), .combine = cbind.data.frame ) %do% {
-                v <- pd4[,i]
-                d <- data.frame(v=v)
-                colnames(d) <- cn[i]
-
-                if( cn[i] == "UNI05" ) {
-                    d <- cbind.data.frame( d, "" )
-                    colnames(d)[2] <- "?"
-                }
-
-
-                d
-
-            }
-
-            colnames(pd5)[ colnames(pd5) == "?" ] <- ""
-            pd5
+            d
 
         }
+
+        colnames(pd5)[ colnames(pd5) == "?" ] <- ""
+        pd5
+
+    }
+    currentProbeAnnotation <- function() {
+        j <- coalesce( input$probe_labels %% 3 + 1, 1 )
+        names(probeAnnotations)[ j ]
+    }
+    ddQcTables <- function( probemode="probe" ) {
+        req(pd <- plateData())
+        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE )
+        qc.data <- attr( qc, "qc.data" )[["1"]]
+
+        sum.probes <- function( .x, limit, cumsum=TRUE ) {
+            l <- length( .x$probes[[limit]] )
+            if( cumsum ) {
+                n <- as.numeric( sub("\\D","", limit) )
+                if( n < 3 )
+                    l <- l + sum.probes( .x, paste0("±",n+1), cumsum=cumsum )
+            }
+            return( l )
+        }
+        list.probes <- function( .x, limit, cumsum=TRUE ) {
+            p <- unique( translate.probes( .x$probes[[limit]], currentProbeAnnotation() ) )
+            if( cumsum ) {
+                n <- as.numeric( sub("\\D","", limit) )
+                if( n < 3 )
+                    p <- unique( append(p, list.probes( .x, paste0("±",n+1), cumsum=cumsum ) ))
+            }
+            return( p )
+        }
+
+        q <- imap_dfr( qc.data, ~{
+            cbind.data.frame(
+                Set = .y,
+                Sample = imap_chr( .x, ~ .x$sample ),
+                "±1" = imap_int( .x, ~ sum.probes(.x,"±1") ),
+                "±2" = imap_int( .x, ~ sum.probes(.x,"±2") ),
+                "±3" = imap_int( .x, ~ sum.probes(.x,"±3") ),
+                "±1 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±1"),collapse=", ") ),
+                "±2 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±2"),collapse=", ") ),
+                "±3 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±3"),collapse=", ") )
+            )
+        })
+        q$Set[ duplicated(q$Set) ] <- ""
+        q
 
     }
 
     plateData <- reactive({
 
-        ## print( bc.file )
-        bc.file <- input$bc_file
-        ## bc.file$datapath <- testfile
-        ## bc.file$name <- basename(testfile)
+        bc.file <- req(input_file())
 
-
-        if( !is.null(bc.file$datapath) ) {
-            gamap(
-                x       = bc.file$datapath,
-                stop.at = "file"
-            )
-        }
-        else
-            NULL
+        gamap(
+            x       = bc.file$datapath,
+            stop.at = "file"
+        )
 
     })
     di <- reactive({
-
-        pd <- plateData()
-
-        if( !is.null(pd) ) {
-            run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
-        }
-
+        pd <- req( plateData() )
+        run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
     })
     bt <- reactive({
+        pd <- req( plateData() )
 
-        pd <- plateData()
+        b <- gamap.probe.levels(
+            x       = pd,
+            start.from = "file",
+            batch   = input$kitlot,
+            qc.check.qcc30 = input$qcc30_filter
+        )
+        bl <- bacteria.limits()
+        colnames(b) <- bl$Bacteria
 
-        if( !is.null(pd) ) {
-            b <- gamap.probe.levels(
-                x       = pd,
-                start.from = "file",
-                batch   = input$kitlot,
-                qc.check.qcc30 = input$qcc30_filter
-            )
-            bl <- bacteria.limits()
-            colnames(b) <- bl$Bacteria
+        sn <- rownames(b)
 
-            sn <- rownames(b)
+        b[ !grepl("QCC(30|29)",sn), ]
 
-            b[ !grepl("QCC(30|29)",sn), ]
-
-        }
-        else {
-            NULL
-        }
 
     })
     din <- reactive({
-
-        pd <- plateData()
-
-        if( !is.null( pd )  ) {
-            run.gamap.from.plate.data( x=pd, input)
-        }
-
+        pd <- req( plateData() )
+        run.gamap.from.plate.data( x=pd, input)
     })
 
     ## Page 1: DI table, BT and DI-Plot:
@@ -207,57 +252,60 @@ shinyServer(function(input, output) {
 
     output$diPlot <- renderPlot({
 
-        bc.file <- input$bc_file
-        ## bc.file$datapath <- testfile
-        ## bc.file$name <- testfile
+        di <- req(di())
 
-        if( !is.null(di()) ) {
+        t2 <- attr( di, "T2" )
+        qres <- attr( di, "Qres" )
 
-            t2 <- attr( di(), "T2" )
-            qres <- attr( di(), "Qres" )
+        names(t2) <- names(qres) <- names(di())
 
-            names(t2) <- names(qres) <- names(di())
+        di <- di()
 
-            di <- di()
+        args <-
+            list(
+                t2, qres,
 
-            args <-
-                list(
-                    t2, qres,
+                main = basename( input_file()$name ),
 
-                    main = basename( bc.file$name ),
+                unit.scale = input$unit_scale,
+                plot.names = input$plot_names,
+                log.scale = input$log_scale,
+                add.di.scale = input$add_di_scale,
+                add.threshold = input$add_threshold,
+                add.normal.backdrop = input$show_normals
+            )
 
-                    unit.scale = input$unit_scale,
-                    plot.names = input$plot_names,
-                    log.scale = input$log_scale,
-                    add.di.scale = input$add_di_scale,
-                    add.threshold = input$add_threshold,
-                    add.normal.backdrop = input$show_normals
-                )
-
-            do.call( plot_di, args )
-
-        }
+        do.call( plot_di, args )
 
     })
     output$downloadResults <- downloadHandler(
 
         filename = function() {
-            sub( "\\.csv$", "-results.csv", input$bc_file, ignore.case=TRUE )
+            sub( "\\.csv$", "-results.csv", input_file()$name, ignore.case=TRUE )
         },
 
         content = function(file) {
-            d <- din()
+            d <- req(din())
             d <- d[ !grepl("QCC(30|29)",names(d)) ]
             b <- bt()
             bl <- bacteria.limits()
             colnames(b) <- probe.numbers( bl$Probe )
-            if( !is.null(d) && !is.null(b) ) {
-                dd <- cbind.data.frame( Sample=names(d), DI=d, b )
-                write.csv( dd, file, row.names=FALSE )
-            }
+            dd <- cbind.data.frame( Sample=names(d), DI=d, b )
+            write.csv( dd, file, row.names=FALSE )
         }
 
     )
+
+    observeEvent( input_file(), {
+        if( is.null(input_file()) ) {
+            print( "HIDING IT" )
+            shinyjs::hideElement( id="download-button-column" )
+        } else {
+            print( "SHOWING IT" )
+            shinyjs::showElement( id="download-button-column" )
+        }
+    })
+    ## output$showDownload <- eventReactive( input_file(), {!is.null(input_file())}, ignoreInit=TRUE )
 
     ## Page 2: QC tables
 
@@ -276,10 +324,11 @@ shinyServer(function(input, output) {
         req(!is.null(plateData()))
         pd <- plateData()
         rx <- paste0( "^\\Q", sname, "\\E$" )
-        plot_abundancy_qc( pd, start.from="file", batch=input$kitlot, sample_rx = rx ) + ggtitle( sname )
+        plot_abundancy_qc( pd, start.from="file", batch=input$kitlot, sample_rx = rx, probenames=currentProbeAnnotation() ) + ggtitle( sname )
     }
 
-    dd_qc_plots <- eventReactive( input$bc_file, {
+    ## dd_qc_plots <- eventReactive( input$bc_file, {
+    dd_qc_plots <- reactive( {
 
         req(!is.null(plateData()))
 
@@ -295,7 +344,8 @@ shinyServer(function(input, output) {
 
     })
 
-    observeEvent( input$bc_file, {
+    ## observeEvent( input$bc_file, {
+    observe({
         req(dd_qc_plots())
         l <- dd_qc_plots()
         iwalk( l, ~{
@@ -322,5 +372,16 @@ shinyServer(function(input, output) {
 
     })
 
+    output$ddQcTables <- renderTable(ddQcTables())
+
+    ## dd probe button text
+    ## input$probe_labels %% 3 + 1
+    observeEvent( input$probe_labels, {
+        new.label <- as.character( probeAnnotations[ coalesce(input$probe_labels %% 3 + 1,1) ] )
+        updateActionButton( session, "probe_labels", label=new.label )
+    })
+    output$probeButton <- renderUI({
+        actionButton( "probe_labels", label=probeAnnotations[1] )
+    })
 
 })

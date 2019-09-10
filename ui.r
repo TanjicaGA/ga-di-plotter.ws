@@ -2,9 +2,13 @@ library(foreach)
 library(shiny)
 library(ga.data)
 library(bettertrace)
+library(shinyjs)
+
+
 
 shinyUI(fluidPage(
 
+    useShinyjs(),
     ## Application title
     ## headerPanel("Plate Analyzer"),
 
@@ -40,11 +44,12 @@ shinyUI(fluidPage(
                             selected = 1
                         )
                     ),
-                    column(
-                        4,
-                        h4("DI + Bact table"),
-                        downloadButton("downloadResults","Download")
-                    )
+                    shinyjs::hidden(column(
+                                 4,
+                                 h4("DI + Bact table"),
+                                 downloadButton("downloadResults","Download"),
+                                 id="download-button-column"
+                             ))
                 )
             ),
 
@@ -110,9 +115,13 @@ shinyUI(fluidPage(
             "Doctor's Data",
 
             wellPanel(
+
                 fluidRow(
-                    ## column( 12, uiOutput( "dd_qcc_plots" ) )
-                    ## column( 12, plotOutput( "DDqccQCC23_A" ) )
+                    column(10, tableOutput("ddQcTables")),
+                    column(2, uiOutput("probeButton"))
+                ),
+
+                fluidRow(
                     div(
                         id="dd-qc-container",
                         uiOutput(
@@ -127,5 +136,8 @@ shinyUI(fluidPage(
         selected = "DI-Plot"
 
     )
+
+    ## tags$script(HTML("console.log(output)"))
+
 
 ))

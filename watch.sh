@@ -10,13 +10,15 @@ start () {
 
 start
 
-inotifywait -m $WATCHED_DIR --format '%e %f' \
+inotifywait -r -m $WATCHED_DIR --format '%e %f' ~/git/R-packages/ga.software.dd \
   -e modify -e delete -e move -e create \
   | while read event file; do
 
   echo $event $file
 
-  kill $PID
-  start
+  if [ $file != '.#'* ]; then
+      kill $PID
+      start
+  fi
 
 done

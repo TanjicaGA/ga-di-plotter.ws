@@ -249,8 +249,8 @@ Hash: a1d2f1fbe369ead8b6fe4dc30b5d1d01
 
 Package: ga.data
 Source: GA
-Version: 1.4.1-8
-Hash: 57c1036f6dbafdf2cca7c63551837a0b
+Version: 1.4.1-10
+Hash: c49971f47d197d40cf9ff3e184156938
 Requires: ga.utils, jsonlite, readr
 
 Package: ga.gamap
@@ -289,8 +289,8 @@ Requires: ga.biocode, ga.data, ga.gamap, ga.gamapqc, ga.utils, gdata,
 
 Package: ga.software.dd
 Source: GA
-Version: 1.2.0-7
-Hash: b110c7a2de778f1253ca9d06210a1764
+Version: 1.3.0-1
+Hash: 58c6ef89e17fac6922bfe74966bb01df
 Requires: digest, dplyr, foreach, ga.data, ga.gamap, ga.gamapqc,
     ga.ggplotextras, ga.software, ga.utils, ggplot2, readr, reshape2,
     stringr, tibble

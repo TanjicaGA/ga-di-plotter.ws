@@ -83,11 +83,6 @@ Source: CRAN
 Version: 1.1.4
 Hash: e88df919a68845e664e019570e2251b6
 
-Package: base64enc
-Source: CRAN
-Version: 0.1-3
-Hash: c590d29e555926af053055e23ee79efb
-
 Package: bettertrace
 Source: github
 Version: 0.1.3
@@ -108,6 +103,12 @@ Source: CRAN
 Version: 3.3.1
 Hash: 5611f2e7617b9ea6737cb083135f7615
 Requires: R6, processx
+
+Package: cellranger
+Source: CRAN
+Version: 1.1.0
+Hash: be9d203e7849f73818b36f93e9273c2c
+Requires: rematch, tibble
 
 Package: cli
 Source: CRAN
@@ -235,71 +236,70 @@ Hash: 104f1ba37405da6eb4d2391f7c02aaba
 Requires: Rcpp
 
 Package: ga.batchcorrection
-Source: source
-Version: 1.4.0-2
-Hash: 81bf648276d3ec130538bd370759abcf
-Requires: ga.data, ga.utils, XML, foreach, ggplot2, minpack.lm, pamr,
+Source: GA
+Version: 1.5.0-7
+Hash: 558e9b5af1eb1074218cddcdf130846f
+Requires: XML, foreach, ga.data, ga.utils, ggplot2, minpack.lm, pamr,
     pls, reshape2, shape
-SourcePath: ~/git/R-packages/ga.batchcorrection
 
 Package: ga.biocode
-Source: source
-Version: 1.1.2-3
-Hash: 8ff7c842c301dd15479eb78546364d6f
-SourcePath: ~/git/R-packages/ga.biocode
+Source: GA
+Version: 1.1.2-7
+Hash: a1d2f1fbe369ead8b6fe4dc30b5d1d01
 
 Package: ga.data
-Source: source
-Version: 1.4.1-1
-Hash: ebead8ec11cc1263567cb8e3f405669d
+Source: GA
+Version: 1.4.1-8
+Hash: 57c1036f6dbafdf2cca7c63551837a0b
 Requires: ga.utils, jsonlite, readr
-SourcePath: ~/git/R-packages/ga.data
 
 Package: ga.gamap
-Source: source
-Version: 1.12.0-2
-Hash: 43df91576ed36579dbc2ff9545848ef5
-Requires: ga.batchcorrection, ga.biocode, ga.data, ga.luminex,
-    ga.utils, foreach, pls, shape
-SourcePath: ~/git/R-packages/ga.gamap
+Source: GA
+Version: 1.13.0-2
+Hash: 884c51c0602896e52630f1976280416e
+Requires: foreach, ga.batchcorrection, ga.biocode, ga.data, ga.luminex,
+    ga.utils, pls, shape, stringr
 
 Package: ga.gamapqc
-Source: source
-Version: 1.0.0-1
-Hash: 5f9a946b32fae912b1e14266e49ea44e
-Requires: ga.data, ga.gamap, ga.utils, GetoptLong, crayon, foreach,
+Source: GA
+Version: 1.0.0-7
+Hash: 2c58a314fd86f89e5f7fe8ed727fb710
+Requires: GetoptLong, crayon, foreach, ga.data, ga.gamap, ga.utils,
     jsonlite, jsonvalidate, readr
-SourcePath: ~/git/R-packages/ga.gamapqc
 
 Package: ga.ggplotextras
-Source: source
-Version: 1.0.0-2
-Hash: aa87b60bccfa16539b1db0852bc7d2ba
+Source: GA
+Version: 1.0.0-7
+Hash: f907ad7698eaa4d63fa60f0eb5c52e16
 Requires: ga.data, ga.utils, ggplot2, ggrepel, pls, plyr, reshape2,
     shape
-SourcePath: ~/git/R-packages/ga.ggplotextras
 
 Package: ga.luminex
-Source: source
-Version: 1.0.0-1
-Hash: e455da05bdafdc07e62b95af2be166f0
-Requires: ga.data, ga.utils, digest, stringr
-SourcePath: ~/git/R-packages/ga.luminex
+Source: GA
+Version: 1.0.0-5
+Hash: 19f301c0e0c5717a22aef5ecc5fed293
+Requires: digest, ga.data, ga.utils, stringr
+
+Package: ga.software
+Source: GA
+Version: 1.3.1-28
+Hash: d15617b3fac52c4e2652c20c02cfc88e
+Requires: ga.biocode, ga.data, ga.gamap, ga.gamapqc, ga.utils, gdata,
+    jsonlite, readxl
 
 Package: ga.software.dd
-Source: source
-Version: 1.1.0
-Hash: e049412c2bcf18d376bf921f6df77202
-Requires: ga.data, ga.gamap, ga.gamapqc, ga.ggplotextras, ga.utils,
-    digest, dplyr, foreach, ggplot2, readr, reshape2, stringr, tibble
-SourcePath: ~/git/R-packages/ga.software.dd
+Source: GA
+Version: 1.2.0-7
+Hash: b110c7a2de778f1253ca9d06210a1764
+Requires: digest, dplyr, foreach, ga.data, ga.gamap, ga.gamapqc,
+    ga.ggplotextras, ga.software, ga.utils, ggplot2, readr, reshape2,
+    stringr, tibble
 
 Package: ga.utils
-Source: source
-Version: 2.1.6-20
-Hash: 115094d7416760706919d935ca4c320c
+Source: GA
+Version: 2.1.6-29
+Hash: a4b2942fed8278d41b78bc6d57636023
 Requires: DBI, RODBC, fpc, gdata, ggplot2, pamr, pls, stringdist
-SourcePath: ~/git/R-packages/ga.utils
 
 Package: gdata
 Source: CRAN
@@ -455,11 +455,6 @@ Version: 0.5.0
 Hash: 38d0efee9bb99bef143bde41c4ce715c
 Requires: colorspace
 
-Package: mvtnorm
-Source: CRAN
-Version: 1.0-11
-Hash: 9b5d395774a35e6e81213a11639a0500
-
 Package: openssl
 Source: CRAN
 Version: 1.4.1
@@ -538,6 +533,12 @@ Version: 3.4.1
 Hash: 5c1f432b290b26ccc2aaaa8ff1fd2f62
 Requires: R6, ps
 
+Package: progress
+Source: CRAN
+Version: 1.2.2
+Hash: 209280eb751acf5899f7c69366e14bd3
+Requires: R6, crayon, hms, prettyunits
+
 Package: promises
 Source: CRAN
 Version: 1.0.1
@@ -567,6 +568,17 @@ Source: CRAN
 Version: 1.3.1
 Hash: c45e5ec73f9bf1d1bdc1e4c6e6a87011
 Requires: BH, R6, Rcpp, clipr, crayon, hms, tibble
+
+Package: readxl
+Source: CRAN
+Version: 1.3.1
+Hash: 5d7697abddc48ab778f9b41486ec0b61
+Requires: Rcpp, cellranger, progress, tibble
+
+Package: rematch
+Source: CRAN
+Version: 1.0.1
+Hash: ad4faf59e7611117ff165817074c50c7
 
 Package: remotes
 Source: CRAN
@@ -649,6 +661,12 @@ Hash: a48cf01573400333efa51dc999ab6447
 Requires: R6, crayon, digest, htmltools, httpuv, jsonlite, later, mime,
     promises, rlang, sourcetools, xtable
 
+Package: shinyjs
+Source: CRAN
+Version: 1.0
+Hash: ea95f751025e50227a96100be35e970b
+Requires: digest, htmltools, jsonlite, shiny
+
 Package: sourcetools
 Source: CRAN
 Version: 0.1.7
@@ -693,11 +711,6 @@ Source: CRAN
 Version: 0.2.5
 Hash: 9ab4ed03f4b7bbdbd1db9d7a920aae1a
 Requires: Rcpp, glue, purrr, rlang
-
-Package: trimcluster
-Source: CRAN
-Version: 0.1-2.1
-Hash: 7a249a07032726a8b1dd48792fdc351f
 
 Package: usethis
 Source: CRAN

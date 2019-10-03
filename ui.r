@@ -28,7 +28,7 @@ shinyUI(fluidPage(
 
                     column(
                         4,
-                        fileInput("bc_file", label=h4("Plate Analyzer v3.0.0"),
+                        fileInput("bc_file", label=h4("Plate Analyzer v4.0.0"),
                                   accept="text/csv" )
                     ),
                     column(
@@ -132,8 +132,8 @@ shinyUI(fluidPage(
             )
         ),
 
-        selected = "Doctor's Data"
-        ## selected = "DI-Plot"
+        ## selected = "Doctor's Data"
+        selected = "DI-Plot"
 
     )
 

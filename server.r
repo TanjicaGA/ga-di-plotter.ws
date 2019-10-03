@@ -12,6 +12,7 @@ library(purrr)
 library(stringr)
 library(ga.software)
 library(shinyjs)
+library(dplyr)
 
 options( stringsAsFactors=FALSE )
 
@@ -48,7 +49,7 @@ translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
     )
 }
 
-DEBUG <- FALSE
+DEBUG <- F
 
 ## Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -150,10 +151,10 @@ shinyServer(function(input, output, session) {
 
     }
     currentProbeAnnotation <- function() {
-        j <- coalesce( input$probe_labels %% 3 + 1, 1 )
+        j <- ga.utils::coalesce( input$probe_labels %% 3 + 1, 1 )
         names(probeAnnotations)[ j ]
     }
-    ddQcTables <- function( probemode="probe" ) {
+    ddQcTables <- function() {
 
         pd <- req(plateData())
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE )
@@ -185,7 +186,23 @@ shinyServer(function(input, output, session) {
             paste( imap_chr( l, ~{ paste0( paste0("[ ±",.y), " <= " , .x, " ]" ) } ), collapse=" & " )
         }
 
-        q <- imap_dfr( qc.data, ~{
+        ## q <- imap_dfr( qc.data[c("QCC23","QCC33")], ~{
+        ##     cbind.data.frame(
+        ##         Set = .y,
+        ##         Sample = imap_chr( .x, ~ .x$sample ),
+        ##         "±1" = imap_int( .x, ~ sum.probes(.x,"±1") ),
+        ##         "±2" = imap_int( .x, ~ sum.probes(.x,"±2") ),
+        ##         "±3" = imap_int( .x, ~ sum.probes(.x,"±3") ),
+        ##         "±1 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±1"),collapse=", ") ),
+        ##         "±2 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±2"),collapse=", ") ),
+        ##         "±3 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±3"),collapse=", ") ),
+        ##         Result = c( "Fail", "Pass" )[ 1+imap_lgl( .x, ~ .x$qc ) ],
+        ##         Criteria = set.criteria( .y )
+        ##     )
+        ## })
+
+
+        q <- imap_dfr( qc.data[c("QCC23","QCC33")], ~{
             cbind.data.frame(
                 Set = .y,
                 Sample = imap_chr( .x, ~ .x$sample ),
@@ -199,6 +216,7 @@ shinyServer(function(input, output, session) {
                 Criteria = set.criteria( .y )
             )
         })
+
         q$Set[ duplicated(q$Set) ] <- ""
         q
 
@@ -376,6 +394,7 @@ shinyServer(function(input, output, session) {
 
     })
 
+    ## output$ddQcTables <- renderTable(ddQcTables())
     output$ddQcTables <- renderTable(ddQcTables())
 
     ## dd probe button text

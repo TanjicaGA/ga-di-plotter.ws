@@ -18,7 +18,6 @@ options( stringsAsFactors=FALSE )
 
 library(bettertrace)
 
-## testfile <- "~/GA/Experiments/Q2-011/Data/01-Raw/Q2-011 L1802_II LX1734 KrG.csv"
 testfile <- "~/B/Projects/DoctorsData/Data/Fresh Sample Ver Study no.1_20190831_113108.csv"
 
 run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
@@ -349,6 +348,8 @@ shinyServer(function(input, output, session) {
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
         rx <- paste0( "^\\Q", sname, "\\E$" )
+        say( "RX = ", rx )
+        say( pd$Sample )
         plot_abundancy_qc( pd, start.from="file", batch=input$kitlot, sample_rx = rx, probenames=currentProbeAnnotation() ) + ggtitle( sname )
     }
 

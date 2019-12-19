@@ -249,48 +249,48 @@ Hash: a1d2f1fbe369ead8b6fe4dc30b5d1d01
 
 Package: ga.data
 Source: GA
-Version: 1.4.1-10
-Hash: c49971f47d197d40cf9ff3e184156938
-Requires: ga.utils, jsonlite, readr
+Version: 1.4.3-7
+Hash: 3667a390095de8bebdf7d9323ea69a12
+Requires: foreach, ga.utils, jsonlite, readr, stringr
 
 Package: ga.gamap
 Source: GA
-Version: 1.13.0-2
-Hash: 884c51c0602896e52630f1976280416e
+Version: 1.13.0-10
+Hash: 4a9758029d0c8bb1002a45ee33617c09
 Requires: foreach, ga.batchcorrection, ga.biocode, ga.data, ga.luminex,
     ga.utils, pls, shape, stringr
 
 Package: ga.gamapqc
 Source: GA
-Version: 1.0.0-7
-Hash: 2c58a314fd86f89e5f7fe8ed727fb710
+Version: 1.0.0-12
+Hash: ca080f21222a906fa69804bdafda23a4
 Requires: GetoptLong, crayon, foreach, ga.data, ga.gamap, ga.utils,
-    jsonlite, jsonvalidate, readr
+    gdata, jsonlite, jsonvalidate, readr
 
 Package: ga.ggplotextras
 Source: GA
-Version: 1.0.0-7
-Hash: f907ad7698eaa4d63fa60f0eb5c52e16
+Version: 1.0.0-10
+Hash: 00f976c568daee10ea8389a37cd554c0
 Requires: ga.data, ga.utils, ggplot2, ggrepel, pls, plyr, reshape2,
     shape
 
 Package: ga.luminex
 Source: GA
-Version: 1.0.0-5
-Hash: 19f301c0e0c5717a22aef5ecc5fed293
-Requires: digest, ga.data, ga.utils, stringr
+Version: 1.0.1-1
+Hash: 7142e7671f70d48bef4f8eb8eaeffacb
+Requires: digest, ga.data, ga.utils, readr, stringi, stringr
 
 Package: ga.software
 Source: GA
-Version: 1.3.1-28
-Hash: d15617b3fac52c4e2652c20c02cfc88e
-Requires: ga.biocode, ga.data, ga.gamap, ga.gamapqc, ga.utils, gdata,
-    jsonlite, readxl
+Version: 1.4.0-3
+Hash: 48f553e39b8d197ee917914a00ce5c4d
+Requires: XML, dplyr, ga.biocode, ga.data, ga.gamap, ga.gamapqc,
+    ga.utils, gdata, jsonlite, readxl
 
 Package: ga.software.dd
 Source: GA
-Version: 1.3.0-1
-Hash: 58c6ef89e17fac6922bfe74966bb01df
+Version: 1.4.0-7
+Hash: 4b4932d33cc6ed2a6a7f9848c99a2ffe
 Requires: digest, dplyr, foreach, ga.data, ga.gamap, ga.gamapqc,
     ga.ggplotextras, ga.software, ga.utils, ggplot2, readr, reshape2,
     stringr, tibble

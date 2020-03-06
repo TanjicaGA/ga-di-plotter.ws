@@ -249,8 +249,8 @@ Hash: a1d2f1fbe369ead8b6fe4dc30b5d1d01
 
 Package: ga.data
 Source: GA
-Version: 1.4.3-7
-Hash: 3667a390095de8bebdf7d9323ea69a12
+Version: 1.4.3-15
+Hash: 968f9cadbf6eee7901eb053809544cb2
 Requires: foreach, ga.utils, jsonlite, readr, stringr
 
 Package: ga.gamap

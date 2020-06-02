@@ -837,6 +837,13 @@
       "Repository": "CRAN",
       "Hash": "57c3009534f805f0f6476ffee68483cc"
     },
+    "renv": {
+      "Package": "renv",
+      "Version": "0.11.0",
+      "Source": "Repository",
+      "Repository": null,
+      "Hash": "892325e762a728a1f3d5739ec8bd970e"
+    },
     "reshape2": {
       "Package": "reshape2",
       "Version": "1.4.4",
@@ -997,6 +1004,20 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "6ea435c354e8448819627cf686f66e0a"
+    },
+    "triebeard": {
+      "Package": "triebeard",
+      "Version": "0.3.0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "847a9d113b78baca4a9a8639609ea228"
+    },
+    "urltools": {
+      "Package": "urltools",
+      "Version": "1.7.3",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e86a704261a105f4703f653e05defa3e"
     },
     "usethis": {
       "Package": "usethis",

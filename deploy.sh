@@ -9,7 +9,7 @@ rsync -lruv \
       --delete \
       --exclude deploy.sh \
       --exclude http_redirect.py \
-      --exclude "packrat/lib*" \
+      --exclude "renv/library" \
       --exclude .git \
       --exclude .gitignore \
       "$source/" "$target/"

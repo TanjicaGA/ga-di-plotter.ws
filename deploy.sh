@@ -5,7 +5,7 @@ source=~/git/ga-di-plotter
 
 cd $source;
 
-rsync -lruv \
+rsync -lcruv \
       --delete \
       --exclude deploy.sh \
       --exclude http_redirect.py \

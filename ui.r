@@ -1,10 +1,10 @@
-library(foreach)
-library(shiny)
-library(ga.data)
-library(bettertrace)
-library(shinyjs)
-
-
+suppressPackageStartupMessages({
+    library(foreach)
+    library(shiny)
+    library(ga.data)
+    library(bettertrace)
+    library(shinyjs)
+})
 
 shinyUI(fluidPage(
 

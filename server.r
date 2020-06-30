@@ -1,24 +1,26 @@
-library(shiny)
-library(ga.data)
-library(ga.biocode)
-library(devtools)
-library(ga.gamap)
-library(ga.utils)
-library(ga.gamapqc)
-library(ga.software.dd)
-library(foreach)
-library(ggplot2)
-library(purrr)
-library(stringr)
-library(ga.software)
-library(shinyjs)
-library(dplyr)
-
 options( stringsAsFactors=FALSE )
 
-library(bettertrace)
+suppressPackageStartupMessages({
+    library(shiny)
+    library(shinyjs)
+    library(devtools)
+    library(ga.data)
+    library(ga.gamap)
+    library(ga.utils)
+    library(ga.gamapqc)
+    library(foreach)
+    library(ggplot2)
+    library(purrr)
+    library(stringr)
+    library(ga.software)
+    library(ga.software.dd)
+    library(dplyr)
+    library(bettertrace)
+    ## load_all("~/git/R-packages/ga.software/")
+    ## load_all("~/git/R-packages/ga.software.dd/")
+})
 
-testfile <- "~/B/Projects/DoctorsData/Data/Fresh Sample Ver Study no.1_20190831_113108.csv"
+testfile <- file.path( Sys.getenv("BIOINFORMATICS"), "Experiments/AID/AID20/AID200625/Data/PlateScans/AID200625 L2001 LX1819 LAR original.csv" )
 
 run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 
@@ -48,7 +50,7 @@ translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
     )
 }
 
-DEBUG <- F
+DEBUG <- FALSE
 
 ## Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -99,13 +101,20 @@ shinyServer(function(input, output, session) {
     qctable <- function(qn) {
 
         pd <- req(plateData())
+        pd$DI <- sprintf( "%.2f", req(din()) )
 
         platform <- pd$Platform[1]
 
         pd2 <- pd[ grep( paste0("^",qn), pd$Sample ),  ]
 
-        i <- grep( "BLANK|UNI05|HYC01", colnames(pd2), value=TRUE )
+        i <- grep( "BLANK|UNI05|HYC01|DI", colnames(pd2), value=TRUE )
         pd3 <- pd2[, c("Sample","Row","Col","Well",i)]
+
+        j <- grepl("BLANK", colnames(pd3))
+        if( all(is.na(pd3[,j]))) {
+            pd3 <- pd3[, !j]
+        }
+
         xr <- probe.data( pd2 )
 
         if( platform == "Lx200" ) {
@@ -113,7 +122,7 @@ shinyServer(function(input, output, session) {
             xr <- xr[, colnames(xr) %!in% lx200.missing.probes() ]
         }
 
-        pd3$Total <- rowSums(xr, na.rm=TRUE)
+        pd3$Total <- sprintf( "%.0f", rowSums(xr, na.rm=TRUE) )
 
         o <- order(
             pd3$Sample %!~% "^QCC30",
@@ -156,10 +165,10 @@ shinyServer(function(input, output, session) {
     ddQcTables <- function() {
 
         pd <- req(plateData())
-        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE )
+        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
         qc.data <- attr( qc, "qc.data" )[["1"]]
 
-        say( jsonlite::toJSON( qc.data, pretty=TRUE, auto_unbox=TRUE ))
+        ## say( jsonlite::toJSON( qc.data, pretty=TRUE, auto_unbox=TRUE ))
 
         sum.probes <- function( .x, limit, cumsum=TRUE ) {
             l <- length( .x$probes[[limit]] )
@@ -181,7 +190,7 @@ shinyServer(function(input, output, session) {
         }
 
         set.criteria <- function( set ) {
-            l <- bacteria.table.qc.parameters()[[set]]$limits
+            l <- bacteria.table.qc.parameters(input$kitlot)[[set]]$limits
             paste( imap_chr( l, ~{ paste0( paste0("[ ±",.y), " <= " , .x, " ]" ) } ), collapse=" & " )
         }
 
@@ -238,13 +247,13 @@ shinyServer(function(input, output, session) {
     bt <- reactive({
         pd <- req( plateData() )
 
-        b <- gamap.probe.levels(
+        b <- gamap.probe.levels.ga(
             x       = pd,
             start.from = "file",
             batch   = input$kitlot,
             qc.check.qcc30 = input$qcc30_filter
         )
-        bl <- bacteria.limits()
+        bl <- bacteria.limits( dont.warn.missing.revision = TRUE )
         colnames(b) <- bl$Bacteria
 
         sn <- rownames(b)
@@ -347,10 +356,14 @@ shinyServer(function(input, output, session) {
     ## Page 3: DD
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
-        rx <- paste0( "^\\Q", sname, "\\E$" )
-        say( "RX = ", rx )
-        say( pd$Sample )
-        plot_abundancy_qc( pd, start.from="file", batch=input$kitlot, sample_rx = rx, probenames=currentProbeAnnotation() ) + ggtitle( sname )
+        rx <- sname
+        plot_abundancy_qc(
+            pd, start.from="file", kitlot=input$kitlot,
+            sample_rx = rx, exact=TRUE,
+            probenames=currentProbeAnnotation(),
+            use.aa=TRUE,
+            bacteria.table.revision="rev5"
+        ) + ggtitle( sname )
     }
 
     ## dd_qc_plots <- eventReactive( input$bc_file, {
@@ -368,8 +381,21 @@ shinyServer(function(input, output, session) {
 
     })
 
-    ## observeEvent( input$bc_file, {
-    observe({
+    observeEvent( input$bc_file, {
+
+        f <- input$bc_file$name
+
+        if( is.character(f) && length(f) > 0 ) {
+            kl <- kitlot.from.filename(f)
+            if(!is.na(kl)) {
+                updateSelectInput( session, "kitlot", selected=kl )
+            }
+        }
+
+    })
+
+    observeEvent( list(input$bc_file,input$kitlot,input$probe_labels), {
+    ## observe({
         l <- req(dd_qc_plots())
         iwalk( l, ~{
             output_name <- paste0( "dd-qc-plot-", .y )
@@ -401,7 +427,7 @@ shinyServer(function(input, output, session) {
     ## dd probe button text
     ## input$probe_labels %% 3 + 1
     observeEvent( input$probe_labels, {
-        new.label <- as.character( probeAnnotations[ coalesce(input$probe_labels %% 3 + 1,1) ] )
+        new.label <- as.character( probeAnnotations[ ga.utils::coalesce(input$probe_labels %% 3 + 1,1) ] )
         updateActionButton( session, "probe_labels", label=new.label )
     })
     output$probeButton <- renderUI({

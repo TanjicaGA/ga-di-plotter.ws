@@ -5,11 +5,11 @@ source=~/git/ga-di-plotter
 
 cd $source;
 
-rsync -lruv \
+rsync -lcruv \
       --delete \
       --exclude deploy.sh \
       --exclude http_redirect.py \
-      --exclude "packrat/lib*" \
+      --exclude "renv/library" \
       --exclude .git \
       --exclude .gitignore \
       "$source/" "$target/"

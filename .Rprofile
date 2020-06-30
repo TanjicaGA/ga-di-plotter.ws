@@ -1,10 +1,7 @@
-#### -- Packrat Autoloader (version 0.5.0) -- ####
-source("packrat/init.R")
-#### -- End Packrat Autoloader -- ####
+source("renv/activate.R")
 
-if( requireNamespace( "drat", quietly=TRUE ) )
-    drat::addRepo( "ga-local", "http://gamap/r-packages" )
-
-update_ga_packages <- function() {
-    update.packages( ask=FALSE, repos="http://gamap/r-packages" )
-}
+local({
+  r <- getOption("repos")
+  r["ga-local"] <- "http://gamap/r-packages"
+  options(repos = r)
+})

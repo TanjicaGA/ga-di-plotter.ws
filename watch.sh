@@ -16,7 +16,7 @@ inotifywait -r -m $WATCHED_DIR --format '%e %f' ~/git/R-packages/ga.software.dd 
 
   echo $event $file
 
-  if [ $file != '.#'* ]; then
+  if [[ $file != '.#'* && $file != 'index.lock' ]]; then
       kill $PID
       start
   fi

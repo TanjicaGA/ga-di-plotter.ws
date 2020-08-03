@@ -248,12 +248,12 @@ shinyServer(function(input, output, session) {
         pd <- req( plateData() )
 
         b <- gamap.probe.levels.ga(
-            x       = pd,
-            start.from = "file",
-            batch   = input$kitlot,
+            x              = pd,
+            start.from     = "file",
+            batch          = input$kitlot,
             qc.check.qcc30 = input$qcc30_filter
         )
-        bl <- bacteria.limits( dont.warn.missing.revision = TRUE )
+        bl <- bacteria.limits( dont.warn.missing.revision = TRUE, revision="rev5" )
         colnames(b) <- bl$Bacteria
 
         sn <- rownames(b)

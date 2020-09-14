@@ -85,10 +85,10 @@
     },
     "RODBC": {
       "Package": "RODBC",
-      "Version": "1.3-17",
+      "Version": "1.3-16",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "8e6bcf765e7713e60d0b859d50724355"
+      "Hash": "feba5e7191ee444ef2cd6c530a2b3d3e"
     },
     "Rcpp": {
       "Package": "Rcpp",
@@ -113,10 +113,10 @@
     },
     "XML": {
       "Package": "XML",
-      "Version": "3.99-0.5",
+      "Version": "3.99-0.3",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "408d42d1359f2a84d377c1f7f0568624"
+      "Hash": "c1616606f097075542c12fb8a10a071e"
     },
     "askpass": {
       "Package": "askpass",

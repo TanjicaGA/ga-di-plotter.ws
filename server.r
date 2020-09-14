@@ -357,13 +357,19 @@ shinyServer(function(input, output, session) {
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
         rx <- sname
-        plot_abundancy_qc(
-            pd, start.from="file", kitlot=input$kitlot,
-            sample_rx = rx, exact=TRUE,
-            probenames=currentProbeAnnotation(),
-            use.aa=TRUE,
-            bacteria.table.revision="rev5"
-        ) + ggtitle( sname )
+        p <- try(
+            plot_abundancy_qc(
+                pd, start.from="file", kitlot=input$kitlot,
+                sample_rx = rx, exact=TRUE,
+                probenames=currentProbeAnnotation(),
+                use.aa=TRUE,
+                bacteria.table.revision="rev5"
+            ) + ggtitle( sname )
+        )
+        if(inherits(p,"try-error")) {
+            return(NULL)
+        }
+        p
     }
 
     ## dd_qc_plots <- eventReactive( input$bc_file, {
@@ -376,6 +382,7 @@ shinyServer(function(input, output, session) {
             plot_dd_qc_sample
         )
         names(l) <- pd$Sample[ c(which(i.qcc23),which(i.qcc33)) ]
+        l <- l[ !sapply( l, is.null ) ]
 
         l
 

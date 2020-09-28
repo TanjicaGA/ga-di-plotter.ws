@@ -370,10 +370,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.5.0-12",
+      "Version": "1.5.0-15",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "15292728cc171c04dbc9501b1ca1b4e3"
+      "Hash": "10899181fe41a8e1a6314f1755642228"
     },
     "ga.gamap": {
       "Package": "ga.gamap",

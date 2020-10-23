@@ -146,7 +146,7 @@ shinyUI(fluidPage(
         ),
 
         ## selected = "Doctor's Data"
-        selected = "Probe Annotations"
+        ## selected = "Probe Annotations"
 
     )
 

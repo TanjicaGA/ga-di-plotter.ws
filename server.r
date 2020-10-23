@@ -441,4 +441,21 @@ shinyServer(function(input, output, session) {
         actionButton( "probe_labels", label=probeAnnotations[1] )
     })
 
+    ## Page 4: Probe Annotations
+
+    pr <- lx200.probes( include.technical=FALSE )
+
+    probe.a <- data.frame(
+        Probe = pr,
+        PhylumNr = as.character( probe.numbers( pr ) ),
+        Annotation = bacteria.names(pr )
+    )
+
+    output$ProbeAnnotations <- renderDataTable(
+        probe.a,
+        options = list(
+            pageLength = 50
+        )
+    )
+
 })

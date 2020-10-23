@@ -132,8 +132,21 @@ shinyUI(fluidPage(
             )
         ),
 
+        tabPanel(
+
+            "Probe Annotations",
+
+            fluidRow(
+                column(
+                    12,
+                    dataTableOutput("ProbeAnnotations")
+                )
+            )
+
+        ),
+
         ## selected = "Doctor's Data"
-        selected = "DI-Plot"
+        selected = "Probe Annotations"
 
     )
 

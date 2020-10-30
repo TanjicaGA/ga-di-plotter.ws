@@ -165,7 +165,9 @@ shinyServer(function(input, output, session) {
     ddQcTables <- function() {
 
         pd <- req(plateData())
+        set.dd.qc.ranges()
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
+        clear.dd.qc.ranges()
         qc.data <- attr( qc, "qc.data" )[["1"]]
 
         ## say( jsonlite::toJSON( qc.data, pretty=TRUE, auto_unbox=TRUE ))
@@ -194,23 +196,8 @@ shinyServer(function(input, output, session) {
             paste( imap_chr( l, ~{ paste0( paste0("[ ±",.y), " <= " , .x, " ]" ) } ), collapse=" & " )
         }
 
-        ## q <- imap_dfr( qc.data[c("QCC23","QCC33")], ~{
-        ##     cbind.data.frame(
-        ##         Set = .y,
-        ##         Sample = imap_chr( .x, ~ .x$sample ),
-        ##         "±1" = imap_int( .x, ~ sum.probes(.x,"±1") ),
-        ##         "±2" = imap_int( .x, ~ sum.probes(.x,"±2") ),
-        ##         "±3" = imap_int( .x, ~ sum.probes(.x,"±3") ),
-        ##         "±1 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±1"),collapse=", ") ),
-        ##         "±2 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±2"),collapse=", ") ),
-        ##         "±3 List of probes" = imap_chr( .x, ~ paste(list.probes(.x,"±3"),collapse=", ") ),
-        ##         Result = c( "Fail", "Pass" )[ 1+imap_lgl( .x, ~ .x$qc ) ],
-        ##         Criteria = set.criteria( .y )
-        ##     )
-        ## })
-
-
         q <- imap_dfr( qc.data[c("QCC23","QCC33")], ~{
+            print( .x )
             cbind.data.frame(
                 Set = .y,
                 Sample = imap_chr( .x, ~ .x$sample ),

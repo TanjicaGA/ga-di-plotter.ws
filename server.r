@@ -380,8 +380,8 @@ shinyServer(function(input, output, session) {
         f <- input$bc_file$name
 
         if( is.character(f) && length(f) > 0 ) {
-            kl <- try( {
-                kitlot.from.filename(f)
+            try( {
+                kl <- kitlot.from.filename(f)
                 if(!is.na(kl)) {
                     updateSelectInput( session, "kitlot", selected=kl )
                 }

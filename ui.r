@@ -1,5 +1,4 @@
 suppressPackageStartupMessages({
-    library(foreach)
     library(shiny)
     library(ga.data)
     library(bettertrace)

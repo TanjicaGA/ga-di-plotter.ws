@@ -89,15 +89,6 @@ shinyServer(function(input, output, session) {
 
         return( d )
     }
-    qc.check <- function( qn, probe, value, platform ) {
-
-        qcset <- gamap.qc.ranges(platform)
-
-        if( qc == "QCC30" ) {
-
-        }
-
-    }
     qctable <- function(qn) {
 
         pd <- req(plateData())

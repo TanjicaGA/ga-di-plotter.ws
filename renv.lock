@@ -64,10 +64,10 @@
     },
     "Matrix": {
       "Package": "Matrix",
-      "Version": "1.2-18",
+      "Version": "1.3-2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "08588806cba69f04797dab50627428ed"
+      "Hash": "ff280503079ad8623d3c4b1519b24ea2"
     },
     "R6": {
       "Package": "R6",
@@ -391,10 +391,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.5.0-39",
+      "Version": "1.5.0-42",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "a14ec6ac086237bce31030353f893f4c"
+      "Hash": "c55a4c35df3eae06df1bce0f146fdf16"
     },
     "ga.gamap": {
       "Package": "ga.gamap",

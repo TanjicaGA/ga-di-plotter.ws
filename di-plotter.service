@@ -2,7 +2,7 @@
 Description=Start DI Plotter service
 
 [Service]
-WorkingDirectory=/home/tl/apps/PlateAnalyzer
+WorkingDirectory=/var/www/shiny/DI-Plotter
 Type=simple
 ExecStart=/bin/bash run.sh
 KillMode=control-group

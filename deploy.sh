@@ -1,7 +1,7 @@
 #!/bin/sh
 
 target=gamap:/var/www/shiny/DI-Plotter
-source=DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+source="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 cd $source;
 

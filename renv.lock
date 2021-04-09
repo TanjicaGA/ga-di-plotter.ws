@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.0.3",
+    "Version": "4.0.4",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -391,17 +391,17 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.5.0-54",
+      "Version": "1.5.0-58",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "9f9bcbaa610f871bf30a0bac2bb68781"
+      "Hash": "db97522e80e3aded85d843d783cdf1f2"
     },
     "ga.gamap": {
       "Package": "ga.gamap",
-      "Version": "1.15.0-3",
+      "Version": "1.17.0-2",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "b9fa6ceaad12d9fab108b00ac3f9e87d"
+      "Hash": "657552df578b68b7cf09a2ad84650605"
     },
     "ga.gamapqc": {
       "Package": "ga.gamapqc",

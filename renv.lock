@@ -183,10 +183,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-20",
+      "Version": "1.6.0-30",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "ad73135479ec7773cd378b483c374629"
+      "Hash": "2c1ffa3568b392cc39cf28aba4d0ec9f"
     },
     "ga.utils": {
       "Package": "ga.utils",
@@ -435,10 +435,10 @@
     },
     "survival": {
       "Package": "survival",
-      "Version": "3.2-11",
+      "Version": "3.2-13",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "f4d706b25d640dbaeb56d9c9b6ce9a22"
+      "Hash": "6f0a0fadc63bc6570fe172770f15bbc4"
     },
     "tibble": {
       "Package": "tibble",

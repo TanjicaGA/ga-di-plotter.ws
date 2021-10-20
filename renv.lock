@@ -190,10 +190,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-39",
+      "Version": "1.6.0-42",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "49ad4205214c8ecb4dab1e5f8d6a8db0"
+      "Hash": "7572d56b210daccd1e48d44031c5f434"
     },
     "ga.utils": {
       "Package": "ga.utils",

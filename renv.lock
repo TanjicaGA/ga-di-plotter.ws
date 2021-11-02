@@ -404,8 +404,8 @@
       "Source": "Local",
       "Repository": "GA",
       "RemoteType": "local",
-      "RemoteUrl": "/home/tzh/git/R-packages/ga.software.dd",
-      "Hash": "cf4b32f5000d380c659dce93d0fc0ad0"
+      "RemoteUrl": "/home/tzh/B/Libraries/R-Packages/ga.software.dd",
+      "Hash": "d6a4cac1900b52f233cf4221742d4c00"
     },
     "ga.utils": {
       "Package": "ga.utils",

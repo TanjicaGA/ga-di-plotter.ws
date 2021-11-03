@@ -37,7 +37,7 @@ shinyUI(fluidPage(
                             label=h4("Kitlot"),
                             choices=local({
                                 ab <- available.batches()
-                                o <- order( grepl("^[KL]",ab), ab, decreasing=TRUE )
+                                o <- order( grepl("^[KLR]",ab), ab, decreasing=TRUE )
                                 as.list(ab[o])
                             }),
                             selected = 1

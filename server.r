@@ -211,17 +211,12 @@ shinyServer(function(input, output, session) {
     plateData <- reactive({
 
         bc.file <- req(input_file())
-        if(DEBUG){
+        
         gamap(  
             x       = bc.file$datapath,
             stop.at = "file"
         )
-       }
-	else{gamap(
-            x       = bc.file,
-            stop.at = "file"
-        )
-       }
+       
     })
     di <- reactive({
         pd <- req( plateData() )

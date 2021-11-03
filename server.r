@@ -211,12 +211,17 @@ shinyServer(function(input, output, session) {
     plateData <- reactive({
 
         bc.file <- req(input_file())
-
-        gamap(
+        if(DEBUG){
+        gamap(  
             x       = bc.file$datapath,
             stop.at = "file"
         )
-
+       }
+	else{gamap(
+            x       = bc.file,
+            stop.at = "file"
+        )
+       }
     })
     di <- reactive({
         pd <- req( plateData() )
@@ -338,7 +343,7 @@ shinyServer(function(input, output, session) {
 	if(grepl("^R",input$kitlot)){p<- try(
             
             plot_abundancy_qc(
-                pd, start.from="file", kitlot="R2014",
+                pd, start.from="file", kitlot=input$kitlot,
                 sample_rx = rx, exact=TRUE,
                 use.aa=TRUE,
                 bacteria.table.revision="rev5"

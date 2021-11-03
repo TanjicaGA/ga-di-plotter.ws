@@ -335,7 +335,20 @@ shinyServer(function(input, output, session) {
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
         rx <- sname
-        p <- try(
+	if(grepl("^R",input$kitlot)){p<- try(
+            plot_abundancy_qc(
+                pd, start.from="file", kitlot=input$kitlot,
+                sample_rx = rx, exact=TRUE,
+                use.aa=TRUE,
+                bacteria.table.revision="rev5"
+            ) + ggtitle( sname )
+        )
+        if(inherits(p,"try-error")) {
+            return(NULL)
+        }
+        p}
+	else
+	{p <- try(
             plot_abundancy_qc(
                 pd, start.from="file", kitlot=input$kitlot,
                 sample_rx = rx, exact=TRUE,
@@ -348,7 +361,7 @@ shinyServer(function(input, output, session) {
             return(NULL)
         }
         p
-    }
+    }}
 
     ## dd_qc_plots <- eventReactive( input$bc_file, {
     dd_qc_plots <- reactive( {

@@ -336,7 +336,7 @@ shinyServer(function(input, output, session) {
         pd <- req(plateData())
         rx <- sname
 	if(grepl("^R",input$kitlot)){p<- try(
-            observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
+            
             plot_abundancy_qc(
                 pd, start.from="file", kitlot=input$kitlot,
                 sample_rx = rx, exact=TRUE,
@@ -349,7 +349,8 @@ shinyServer(function(input, output, session) {
         }
         p}
 	else
-	{p <- try(
+	{ observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
+	    p <- try(
             plot_abundancy_qc(
                 pd, start.from="file", kitlot=input$kitlot,
                 sample_rx = rx, exact=TRUE,

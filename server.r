@@ -338,7 +338,7 @@ shinyServer(function(input, output, session) {
 	if(grepl("^R",input$kitlot)){p<- try(
             
             plot_abundancy_qc(
-                pd, start.from="file", kitlot=input$kitlot,
+                pd, start.from="file", kitlot="R2014",
                 sample_rx = rx, exact=TRUE,
                 use.aa=TRUE,
                 bacteria.table.revision="rev5"

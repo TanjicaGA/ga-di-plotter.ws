@@ -218,6 +218,12 @@ shinyServer(function(input, output, session) {
         q
 
     }
+    
+    set.dd.qc.ranges_r <- function() {
+        ow <- options( GamapQcOverride = list(QCC30.total.signal = c( 85000, 160000 )))
+        invisible(ow)
+        }
+
 
     plateData <- reactive({
 

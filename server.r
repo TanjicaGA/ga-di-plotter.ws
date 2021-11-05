@@ -71,6 +71,8 @@ shinyServer(function(input, output, session) {
     }
 
     ## FUNCTIONS
+    
+
     qcc <- function(qn) {
 
         pd <- req(plateData())
@@ -154,9 +156,17 @@ shinyServer(function(input, output, session) {
         names(probeAnnotations)[ j ]
     }
     ddQcTables <- function() {
+        ##ADDED NEW FUNCTION FOR QC RANGES IN R KIT
+        set.dd.qc.ranges_r <- function() {
+        ow <- options( GamapQcOverride = list(QCC30.total.signal = c( 85000, 160000 )))
+        invisible(ow)
+        }
 
         pd <- req(plateData())
-        set.dd.qc.ranges()
+        ## CHANGE WITH QC RANGES FOR R KIT IS HERE:
+        if(grepl("L",input$kitlot)){set.dd.qc.ranges()}
+        if(grepl("R",input$kitlot)){set.dd.qc.ranges_r()}
+        
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
         clear.dd.qc.ranges()
         qc.data <- attr( qc, "qc.data" )[["1"]]
@@ -192,6 +202,7 @@ shinyServer(function(input, output, session) {
             cbind.data.frame(
                 Set = .y,
                 Sample = imap_chr( .x, ~ .x$sample ),
+                
                 "±1" = imap_int( .x, ~ sum.probes(.x,"±1") ),
                 "±2" = imap_int( .x, ~ sum.probes(.x,"±2") ),
                 "±3" = imap_int( .x, ~ sum.probes(.x,"±3") ),
@@ -212,11 +223,11 @@ shinyServer(function(input, output, session) {
 
         bc.file <- req(input_file())
         
-        gamap(  
+        x_run=gamap(  
             x       = bc.file$datapath,
             stop.at = "file"
         )
-       
+       x_run
     })
     di <- reactive({
         pd <- req( plateData() )

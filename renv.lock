@@ -358,10 +358,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-42",
+      "Version": "1.6.0-44",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "7572d56b210daccd1e48d44031c5f434"
+      "Hash": "d069e7b30bbcfa4edfc17ed6ebd8efba"
     },
     "ga.gamap": {
       "Package": "ga.gamap",
@@ -401,11 +401,9 @@
     "ga.software.dd": {
       "Package": "ga.software.dd",
       "Version": "1.1.0",
-      "Source": "Local",
+      "Source": "Repository",
       "Repository": "GA",
-      "RemoteType": "local",
-      "RemoteUrl": "/home/tzh/B/Libraries/R-Packages/ga.software.dd",
-      "Hash": "d6a4cac1900b52f233cf4221742d4c00"
+      "Hash": "a331375dc8b6b3786d81b80d1f02ef2e"
     },
     "ga.utils": {
       "Package": "ga.utils",

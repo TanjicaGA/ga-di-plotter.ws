@@ -52,6 +52,12 @@ translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
 
 DEBUG <- FALSE
 
+set.dd.qc.ranges_r <- function() {
+        ow <- options( GamapQcOverride = list(QCC30.total.signal = c( 85000, 160000 )))
+        invisible(ow)
+        }
+
+
 ## Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
 

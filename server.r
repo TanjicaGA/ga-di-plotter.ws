@@ -170,11 +170,17 @@ shinyServer(function(input, output, session) {
 
         pd <- req(plateData())
         ## CHANGE WITH QC RANGES FOR R KIT IS HERE:
-        if(grepl("L",input$kitlot)){set.dd.qc.ranges()}
-        if(grepl("R",input$kitlot)){set.dd.qc.ranges_r()}
-        
+        if(grepl("L",input$kitlot)){
+        set.dd.qc.ranges()
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
         clear.dd.qc.ranges()
+        }
+        if(grepl("R",input$kitlot)){
+        set.dd.qc.ranges()
+        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
+        clear.dd.qc.ranges()
+        }
+        
         qc.data <- attr( qc, "qc.data" )[["1"]]
 
         ## say( jsonlite::toJSON( qc.data, pretty=TRUE, auto_unbox=TRUE ))
@@ -358,11 +364,14 @@ shinyServer(function(input, output, session) {
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
         rx <- sname
-	if(grepl("^R",input$kitlot)){p<- try(
+	if(grepl("^R",input$kitlot)){
+            
+            p<- try(
             
             plot_abundancy_qc(
                 pd, start.from="file", kitlot=input$kitlot,
                 sample_rx = rx, exact=TRUE,
+                probenames=currentProbeAnnotation(),
                 use.aa=TRUE,
                 bacteria.table.revision="rev5"
             ) + ggtitle( sname )

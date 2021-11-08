@@ -401,11 +401,9 @@
     "ga.software.dd": {
       "Package": "ga.software.dd",
       "Version": "1.1.0",
-      "Source": "Local",
+      "Source": "Repository",
       "Repository": "GA",
-      "RemoteType": "local",
-      "RemoteUrl": "/home/tzh/B/Libraries/R-Packages/ga.software.dd",
-      "Hash": "d6a4cac1900b52f233cf4221742d4c00"
+      "Hash": "a331375dc8b6b3786d81b80d1f02ef2e"
     },
     "ga.utils": {
       "Package": "ga.utils",

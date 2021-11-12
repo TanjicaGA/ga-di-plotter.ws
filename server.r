@@ -52,11 +52,6 @@ translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
 
 DEBUG <- FALSE
 
-set.dd.qc.ranges_r <- function() {
-        ow <- options( GamapQcOverride = list(QCC30.total.signal = c( 85000, 160000 )))
-        invisible(ow)
-        }
-
 
 ## Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -163,23 +158,13 @@ shinyServer(function(input, output, session) {
     }
     ddQcTables <- function() {
         ##ADDED NEW FUNCTION FOR QC RANGES IN R KIT
-        set.dd.qc.ranges_r <- function() {
-        ow <- options( GamapQcOverride = list(QCC30.total.signal = c( 85000, 160000 )))
-        invisible(ow)
-        }
+        
 
         pd <- req(plateData())
-        ## CHANGE WITH QC RANGES FOR R KIT IS HERE:
-        if(grepl("L",input$kitlot)){
         set.dd.qc.ranges()
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
         clear.dd.qc.ranges()
-        }
-        if(grepl("R",input$kitlot)){
-        set.dd.qc.ranges()
-        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
-        clear.dd.qc.ranges()
-        }
+        
         
         qc.data <- attr( qc, "qc.data" )[["1"]]
 
@@ -364,7 +349,6 @@ shinyServer(function(input, output, session) {
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
         rx <- sname
-	if(grepl("^R",input$kitlot)){
             
             p<- try(
             
@@ -379,23 +363,9 @@ shinyServer(function(input, output, session) {
         if(inherits(p,"try-error")) {
             return(NULL)
         }
-        p}
-	else
-	{ observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
-	    p <- try(
-            plot_abundancy_qc(
-                pd, start.from="file", kitlot=input$kitlot,
-                sample_rx = rx, exact=TRUE,
-                probenames=currentProbeAnnotation(),
-                use.aa=TRUE,
-                bacteria.table.revision="rev5"
-            ) + ggtitle( sname )
-        )
-        if(inherits(p,"try-error")) {
-            return(NULL)
-        }
         p
-    }}
+	
+    }
 
     ## dd_qc_plots <- eventReactive( input$bc_file, {
     dd_qc_plots <- reactive( {

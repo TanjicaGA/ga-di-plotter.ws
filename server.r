@@ -345,7 +345,7 @@ shinyServer(function(input, output, session) {
         pd <- req(plateData())
         rx <- sname
         if(grepl("^R",input$kitlot)){
-            cat(file=stderr(), paste0("kitlot: ",input$kitlot, "\n"))
+            
             p<- try(
             
             plot_abundancy_qc(

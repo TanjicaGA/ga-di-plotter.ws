@@ -216,11 +216,6 @@ shinyServer(function(input, output, session) {
 
     }
     
-    set.dd.qc.ranges_r <- function() {
-        ow <- options( GamapQcOverride = list(QCC30.total.signal = c( 85000, 160000 )))
-        invisible(ow)
-        }
-
 
     plateData <- reactive({
 
@@ -349,7 +344,8 @@ shinyServer(function(input, output, session) {
     plot_dd_qc_sample <- function( sname ) {
         pd <- req(plateData())
         rx <- sname
-            
+        if(grepl("^R",input$kitlot)){
+            cat(file=stderr(), paste0("kitlot: ",input$kitlot, "\n"))
             p<- try(
             
             plot_abundancy_qc(
@@ -363,9 +359,24 @@ shinyServer(function(input, output, session) {
         if(inherits(p,"try-error")) {
             return(NULL)
         }
+        p}
+	else
+	{ observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
+	    p <- try(
+            plot_abundancy_qc(
+                pd, start.from="file", kitlot=input$kitlot,
+                sample_rx = rx, exact=TRUE,
+                probenames=currentProbeAnnotation(),
+                use.aa=TRUE,
+                bacteria.table.revision="rev5"
+            ) + ggtitle( sname )
+        )
+        if(inherits(p,"try-error")) {
+            return(NULL)
+        }
         p
-	
-    }
+    }}
+
 
     ## dd_qc_plots <- eventReactive( input$bc_file, {
     dd_qc_plots <- reactive( {

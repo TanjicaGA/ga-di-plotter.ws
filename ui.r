@@ -117,7 +117,8 @@ shinyUI(fluidPage(
 
                 fluidRow(
                     column(10, tableOutput("ddQcTables")),
-                    column(2, uiOutput("probeButton"))
+                    column(2, uiOutput("probeButton")),
+		   ## column(1,checkboxInput("qcc30_filter", label="QCC30 QC", value=TRUE))
                 ),
 
                 fluidRow(

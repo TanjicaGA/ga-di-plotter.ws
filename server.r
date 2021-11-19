@@ -21,7 +21,7 @@ suppressPackageStartupMessages({
 })
 
 testfile <- file.path( Sys.getenv("BIOINFORMATICS"), "Experiments/AID/AID20/AID200625/Data/PlateScans/AID200625 L2001 LX1819 LAR original.csv" )
-
+testfile_R <- file.path( Sys.getenv("BIOINFORMATICS"), "Production/Kitlot/R2103/Data/PlateScans/Q2-015 R2103 LX1819 LO.csv" )
 run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 
     args <- list(
@@ -38,6 +38,7 @@ run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
     do.call( gamap, args )
 
 }
+
 
 translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
     mode <- match.arg( mode )
@@ -70,6 +71,7 @@ shinyServer(function(input, output, session) {
         }
         b
     }
+    
 
     ## FUNCTIONS
     
@@ -159,10 +161,23 @@ shinyServer(function(input, output, session) {
     ddQcTables <- function() {
         ##ADDED NEW FUNCTION FOR QC RANGES IN R KIT
         
+        if(grepl("^R",input$kitlot)){
+                
+             
+               pd<-req(plateData())
+	       pd$Platform=rep("lx200.RUOII",length(pd$Platform))	
+          ##   	observeEvent(input$bc_file, {print(paste0("R names: ", pd))})      
+	     ## cat(file=stderr(),is.recursive(pd))
 
+         }
+        else{    
+        
         pd <- req(plateData())
+	##observeEvent(input$bc_file, {print(paste0("L names: ", colnames(pd)))})
+	}
         set.dd.qc.ranges()
         qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
+     ##	observeEvent(input$kitlot, {print(paste0("pd is : ", pd))})
         clear.dd.qc.ranges()
         
         
@@ -227,6 +242,8 @@ shinyServer(function(input, output, session) {
         )
        x_run
     })
+    
+
     di <- reactive({
         pd <- req( plateData() )
         run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
@@ -345,7 +362,9 @@ shinyServer(function(input, output, session) {
         pd <- req(plateData())
         rx <- sname
         if(grepl("^R",input$kitlot)){
-            
+           
+	   
+            pd$Platform=rep("lx200.RUOII",length(pd$Platform)) 	
             p<- try(
             
             plot_abundancy_qc(
@@ -361,7 +380,7 @@ shinyServer(function(input, output, session) {
         }
         p}
 	else
-	{ observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
+	{ ##observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
 	    p <- try(
             plot_abundancy_qc(
                 pd, start.from="file", kitlot=input$kitlot,

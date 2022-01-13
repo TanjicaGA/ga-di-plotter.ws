@@ -379,10 +379,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-57",
+      "Version": "1.6.0-62",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "aed579e5cce203884f76cb62bbcd3b97"
+      "Hash": "9e7894752239b706d3e7e1d5aebe15ce"
     },
     "ga.gamap": {
       "Package": "ga.gamap",
@@ -421,10 +421,10 @@
     },
     "ga.software.dd": {
       "Package": "ga.software.dd",
-      "Version": "1.5.0-20",
+      "Version": "1.5.0-21",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "17281ae10bfd4c1a7ad1abcb68478d50"
+      "Hash": "9b411d1710ccd41ccbe5b0283adb7d33"
     },
     "ga.utils": {
       "Package": "ga.utils",
@@ -953,10 +953,10 @@
     },
     "shinyjs": {
       "Package": "shinyjs",
-      "Version": "2.0.0",
+      "Version": "2.1.0",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "9ddfc91d4280eaa34c2103951538976f"
+      "Hash": "802e4786b353a4bb27116957558548d5"
     },
     "sourcetools": {
       "Package": "sourcetools",

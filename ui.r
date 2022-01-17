@@ -1,7 +1,7 @@
 suppressPackageStartupMessages({
     library(shiny)
     library(ga.data)
-    library(bettertrace)
+  #  library(bettertrace)
     library(shinyjs)
 })
 
@@ -118,7 +118,7 @@ shinyUI(fluidPage(
                 fluidRow(
                     column(10, tableOutput("ddQcTables")),
                     column(2, uiOutput("probeButton")),
-		   ## column(1,checkboxInput("qcc30_filter", label="QCC30 QC", value=TRUE))
+		                column(1,checkboxInput("qc_all_filter", label="QCC30 QC", value=TRUE))
                 ),
 
                 fluidRow(

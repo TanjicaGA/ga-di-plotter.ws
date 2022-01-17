@@ -192,7 +192,7 @@ shinyServer(function(input, output, session) {
 	##observeEvent(input$bc_file, {print(paste0("L names: ", colnames(pd)))})
 	}
         set.dd.qc.ranges()
-        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa" )
+        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa",qc.check.qcc30=input$qc_all_filter )
      ##	observeEvent(input$kitlot, {print(paste0("pd is : ", pd))})
         clear.dd.qc.ranges()
         

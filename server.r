@@ -15,7 +15,8 @@ suppressPackageStartupMessages({
     library(ga.software)
     library(ga.software.dd)
     library(dplyr)
-    library(bettertrace)
+    library(ga.diversityindex)
+   # library(bettertrace)
     ## load_all("~/git/R-packages/ga.software/")
     ## load_all("~/git/R-packages/ga.software.dd/")
 })
@@ -37,6 +38,20 @@ run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 
     do.call( gamap, args )
 
+}
+
+
+run.div.from.plate.data<-function(x,input,...)
+{
+  
+  args<- list(
+    x=x,
+    batch=input$kitlot,
+    qc.check.qcc30 = input$qcc30_filter,
+    ...
+    
+  )
+  do.call(divind, args)
 }
 
 
@@ -83,6 +98,7 @@ shinyServer(function(input, output, session) {
         dd <- data.frame(
             QCC    = pd$Sample,
             DI        = din(),
+            div    = div(),
             row.names = NULL
         )
         nn <- dd$QCC
@@ -98,12 +114,12 @@ shinyServer(function(input, output, session) {
 
         pd <- req(plateData())
         pd$DI <- sprintf( "%.2f", req(din()) )
-
+        pd$div <- sprintf( "%.2f", req(div()) )
         platform <- pd$Platform[1]
 
         pd2 <- pd[ grep( paste0("^",qn), pd$Sample ),  ]
 
-        i <- grep( "BLANK|UNI05|HYC01|DI", colnames(pd2), value=TRUE )
+        i <- grep( "BLANK|UNI05|HYC01|DI|div", colnames(pd2), value=TRUE )
         pd3 <- pd2[, c("Sample","Row","Col","Well",i)]
 
         j <- grepl("BLANK", colnames(pd3))
@@ -270,6 +286,11 @@ shinyServer(function(input, output, session) {
         pd <- req( plateData() )
         run.gamap.from.plate.data( x=pd, input)
     })
+    
+    div<-reactive({
+      bc.file <- req(input_file())
+      run.div.from.plate.data(x=bc.file$datapath,input)
+    })
 
     ## Page 1: DI table, BT and DI-Plot:
 
@@ -282,6 +303,7 @@ shinyServer(function(input, output, session) {
             dd <- data.frame(
                 Sample    = names(din()),
                 DI        = din(),
+                div       = div(),
                 row.names = NULL
             )
 

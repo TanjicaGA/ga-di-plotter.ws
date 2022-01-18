@@ -394,7 +394,7 @@ shinyServer(function(input, output, session) {
                 sample_rx = rx, exact=TRUE,
                 probenames=currentProbeAnnotation(),
                 use.aa=TRUE,
-                qc.check.qcc30=input$qc_all_filter,
+                use.lower.qc.criterion=input$qc_all_filter,
                 bacteria.table.revision="rev5"
             ) + ggtitle( sname )
         )
@@ -410,7 +410,7 @@ shinyServer(function(input, output, session) {
                 sample_rx = rx, exact=TRUE,
                 probenames=currentProbeAnnotation(),
                 use.aa=TRUE,
-                qc.check.qcc30=input$qc_all_filter,
+                use.lower.qc.criterion=input$qc_all_filter,
                 bacteria.table.revision="rev5"
             ) + ggtitle( sname )
         )

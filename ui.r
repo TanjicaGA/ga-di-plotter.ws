@@ -118,7 +118,7 @@ shinyUI(fluidPage(
                 fluidRow(
                     column(10, tableOutput("ddQcTables")),
                     column(2, uiOutput("probeButton")),
-		                column(1,checkboxInput("qc_all_filter", label="QCC30 QC", value=TRUE))
+		              
                 ),
 
                 fluidRow(
@@ -143,11 +143,21 @@ shinyUI(fluidPage(
                 )
             )
 
-        )
+        ),
+        tabPanel(
 
-        ## selected = "Doctor's Data"
-        ## selected = "Probe Annotations"
+          "DIV plot",
+         
+         
 
+                fluidRow(
+                  column(12,
+                         plotOutput("DIvsDIVplot", height="500px")
+                  )
+                )
+            
+
+       )
     )
 
     ## tags$script(HTML("console.log(output)"))

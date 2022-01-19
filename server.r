@@ -191,8 +191,8 @@ shinyServer(function(input, output, session) {
         pd <- req(plateData())
 	##observeEvent(input$bc_file, {print(paste0("L names: ", colnames(pd)))})
 	}
-        set.dd.qc.ranges()
-        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa",qc.check.qcc30=input$qc_all_filter )
+        set.dd.qc.ranges(use.lower.qc.criterion=input$qcc30_filter)
+        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa",qc.check.qcc30=input$qcc30_filter )
      ##	observeEvent(input$kitlot, {print(paste0("pd is : ", pd))})
         clear.dd.qc.ranges()
         
@@ -340,6 +340,32 @@ shinyServer(function(input, output, session) {
         do.call( plot_di, args )
 
     })
+    output$DIvsDIVplot<-renderPlot({
+      
+    
+      div<-div()
+      din<-din()
+      din.round <- ceiling(din)
+      
+      name <- names(din)
+      din.df <- as.data.frame( cbind(name,din,din.round))
+      
+      colnames(din.df) <- c("Sample", "din", "DI")
+      rownames(din.df) <- NULL
+      
+      name.div <- names(div)
+      div.df <- as.data.frame( cbind(name.div,div))
+      colnames(div.df) <- c("Sample", "DiversityIndex")
+      rownames(div.df) <- NULL
+      
+      v1.DI.div <- merge(din.df,div.df, by="Sample")
+      
+      v1.DI.div$`DI` <-as.numeric(v1.DI.div$`DI`)
+      v1.DI.div$`DiversityIndex`  <-as.numeric(v1.DI.div$`DiversityIndex`)
+      v1.DI.div$din <-as.numeric(v1.DI.div$din)
+      g=ggplot(v1.DI.div, aes(x= Sample, y=`DiversityIndex`, color= as.factor(`DI`) ))  + geom_point() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=7)) + ylim(0,5) + geom_hline(yintercept = 2.5, linetype='dotted') +scale_color_manual(values=c("green4","green3","yellow3","orange","red"))
+      g
+    })
     output$downloadResults <- downloadHandler(
 
         filename = function() {
@@ -394,7 +420,7 @@ shinyServer(function(input, output, session) {
                 sample_rx = rx, exact=TRUE,
                 probenames=currentProbeAnnotation(),
                 use.aa=TRUE,
-                use.lower.qc.criterion=input$qc_all_filter,
+                use.lower.qc.criterion=input$qcc30_filter,
                 bacteria.table.revision="rev5"
             ) + ggtitle( sname )
         )
@@ -410,7 +436,7 @@ shinyServer(function(input, output, session) {
                 sample_rx = rx, exact=TRUE,
                 probenames=currentProbeAnnotation(),
                 use.aa=TRUE,
-                use.lower.qc.criterion=input$qc_all_filter,
+                use.lower.qc.criterion=input$qcc30_filter,
                 bacteria.table.revision="rev5"
             ) + ggtitle( sname )
         )

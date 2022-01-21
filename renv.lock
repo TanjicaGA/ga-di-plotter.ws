@@ -3,12 +3,16 @@
     "Version": "4.0.5",
     "Repositories": [
       {
-        "Name": null,
+        "Name": "http://cran.ii.uib.no",
         "URL": "http://cran.ii.uib.no"
       },
       {
-        "Name": null,
+        "Name": "http://cran.fhcrc.org",
         "URL": "http://cran.fhcrc.org"
+      },
+      {
+        "Name": "ga-local",
+        "URL": "http://gamap/r-packages"
       }
     ]
   },
@@ -379,10 +383,17 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-62",
+      "Version": "1.6.0-63",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "9e7894752239b706d3e7e1d5aebe15ce"
+      "Hash": "8a01a56075b6424cabdec467a181d529"
+    },
+    "ga.diversityindex": {
+      "Package": "ga.diversityindex",
+      "Version": "1.0.0-1",
+      "Source": "Repository",
+      "Repository": "GA",
+      "Hash": "08386e94ff9d353ed4146539910ff6c6"
     },
     "ga.gamap": {
       "Package": "ga.gamap",
@@ -421,10 +432,10 @@
     },
     "ga.software.dd": {
       "Package": "ga.software.dd",
-      "Version": "1.5.0-21",
+      "Version": "1.5.0-25",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "9b411d1710ccd41ccbe5b0283adb7d33"
+      "Hash": "0f94e2613bcc4e64d5a5b319464dd080"
     },
     "ga.utils": {
       "Package": "ga.utils",
@@ -705,6 +716,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "5fd4f46c00b680611fe471b85d856189"
+    },
+    "permute": {
+      "Package": "permute",
+      "Version": "0.9-5",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "e367efa1f0d52cb753bdb9163b63f528"
     },
     "pillar": {
       "Package": "pillar",
@@ -1048,6 +1066,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ecf749a1b39ea72bd9b51b76292261f1"
+    },
+    "vegan": {
+      "Package": "vegan",
+      "Version": "2.5-7",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "01771d8de354fa30c87c68e599e2429b"
     },
     "viridisLite": {
       "Package": "viridisLite",

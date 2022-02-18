@@ -383,10 +383,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-63",
+      "Version": "1.6.0-64",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "8a01a56075b6424cabdec467a181d529"
+      "Hash": "5724b0d034ab57a14998ffe0c57396a7"
     },
     "ga.diversityindex": {
       "Package": "ga.diversityindex",

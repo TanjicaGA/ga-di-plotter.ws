@@ -192,7 +192,7 @@ shinyServer(function(input, output, session) {
 	##observeEvent(input$bc_file, {print(paste0("L names: ", colnames(pd)))})
 	}
         set.dd.qc.ranges(use.lower.qc.criterion=input$qcc30_filter)
-        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, variant="aa",bt.args=list())
+        qc <- abundancy.table.qc( pd, start.from="file", batch=input$kitlot, report.per.sample=FALSE, kitlots=input$kitlot, akkermansia_pos=input$akkermansia_pos,variant="aa",bt.args=list())
      ##	observeEvent(input$kitlot, {print(paste0("pd is : ", pd))})
         clear.dd.qc.ranges()
         
@@ -271,7 +271,8 @@ shinyServer(function(input, output, session) {
             x              = pd,
             start.from     = "file",
             batch          = input$kitlot,
-            qc.check.qcc30 = input$qcc30_filter
+            qc.check.qcc30 = input$qcc30_filter,
+            akkermansia_pos= input$akkermansia_pos
         )
         bl <- bacteria.limits( dont.warn.missing.revision = TRUE, revision="rev5" )
         colnames(b) <- bl$Bacteria
@@ -413,38 +414,25 @@ shinyServer(function(input, output, session) {
            
 	   
             pd$Platform=rep("lx200.RUOII",length(pd$Platform)) 	
-            p<- try(
+	}
+	    p<- try(
             
             plot_abundancy_qc(
                 pd, start.from="file", kitlot=input$kitlot,
+		akkermansia_pos=input$akkermansia_pos,
                 sample_rx = rx, exact=TRUE,
                 probenames=currentProbeAnnotation(),
                 use.aa=TRUE,
                 use.lower.qc.criterion=input$qcc30_filter,
-                bacteria.table.revision="rev5"
-            ) + ggtitle( sname )
-        )
-        if(inherits(p,"try-error")) {
-            return(NULL)
-        }
-        p}
-	else
-	{ ##observeEvent(input$kitlot, {print(paste0("kitlot: ", input$kitlot))})
-	    p <- try(
-            plot_abundancy_qc(
-                pd, start.from="file", kitlot=input$kitlot,
-                sample_rx = rx, exact=TRUE,
-                probenames=currentProbeAnnotation(),
-                use.aa=TRUE,
-                use.lower.qc.criterion=input$qcc30_filter,
-                bacteria.table.revision="rev5"
+		bacteria.table.revision="rev5"
             ) + ggtitle( sname )
         )
         if(inherits(p,"try-error")) {
             return(NULL)
         }
         p
-    }}
+	
+    }
 
 
     ## dd_qc_plots <- eventReactive( input$bc_file, {
@@ -478,7 +466,7 @@ shinyServer(function(input, output, session) {
 
     })
 
-    observeEvent( list(input$bc_file,input$kitlot,input$probe_labels), {
+    observeEvent( list(input$bc_file,input$kitlot,input$probe_labels,input$akkermansia_pos), {
     ## observe({
         l <- req(dd_qc_plots())
         iwalk( l, ~{
@@ -505,7 +493,7 @@ shinyServer(function(input, output, session) {
 
     })
 
-    ## output$ddQcTables <- renderTable(ddQcTables())
+    
     output$ddQcTables <- renderTable(ddQcTables())
 
     ## dd probe button text

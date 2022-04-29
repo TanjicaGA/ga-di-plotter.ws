@@ -120,6 +120,9 @@ shinyUI(fluidPage(
                     column(2, uiOutput("probeButton")),
 		              
                 ),
+                fluidRow(
+                    column(1,checkboxInput("akkermansia_pos", label="change_Akkermansia_limit", value=FALSE))
+                ),
 
                 fluidRow(
                     div(

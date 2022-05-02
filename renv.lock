@@ -397,10 +397,10 @@
     },
     "ga.gamap": {
       "Package": "ga.gamap",
-      "Version": "1.18.0-9",
+      "Version": "1.18.0-14",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "1c929cb97226eac737bbf578489aff5d"
+      "Hash": "3be3c148a33083ceabee5749aabaf072"
     },
     "ga.gamapqc": {
       "Package": "ga.gamapqc",

@@ -397,10 +397,10 @@
     },
     "ga.gamap": {
       "Package": "ga.gamap",
-      "Version": "1.18.0-8",
+      "Version": "1.18.0-9",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "e10f5616653878c82d1073350f95fe30"
+      "Hash": "1c929cb97226eac737bbf578489aff5d"
     },
     "ga.gamapqc": {
       "Package": "ga.gamapqc",
@@ -432,10 +432,10 @@
     },
     "ga.software.dd": {
       "Package": "ga.software.dd",
-      "Version": "1.5.0-25",
+      "Version": "1.5.0-26",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "0f94e2613bcc4e64d5a5b319464dd080"
+      "Hash": "cd671640aec458e50471d83d8b04afe8"
     },
     "ga.utils": {
       "Package": "ga.utils",

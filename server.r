@@ -177,7 +177,7 @@ shinyServer(function(input, output, session) {
     ddQcTables <- function() {
         ##ADDED NEW FUNCTION FOR QC RANGES IN R KIT
         
-        if(grepl("^R"|"^LUM",input$kitlot)){
+        if(grepl("^R",input$kitlot)){
                 
              
                pd<-req(plateData())

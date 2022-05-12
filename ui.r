@@ -111,7 +111,7 @@ shinyUI(fluidPage(
 
         tabPanel(
 
-            "Doctor's Data",
+            "Bacteria Abundance",
 
             wellPanel(
 

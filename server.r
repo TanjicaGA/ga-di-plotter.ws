@@ -177,7 +177,7 @@ shinyServer(function(input, output, session) {
     ddQcTables <- function() {
         ##ADDED NEW FUNCTION FOR QC RANGES IN R KIT
         
-        if(grepl("^R",input$kitlot)){
+        if(grepl("^R"|"^LUM",input$kitlot)){
                 
              
                pd<-req(plateData())
@@ -415,6 +415,11 @@ shinyServer(function(input, output, session) {
 	   
             pd$Platform=rep("lx200.RUOII",length(pd$Platform)) 	
 	}
+	if(grepl("^LUM",input$kitlot)){
+
+
+            pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+        }
 	    p<- try(
             
             plot_abundancy_qc(

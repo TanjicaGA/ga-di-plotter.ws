@@ -186,6 +186,10 @@ shinyServer(function(input, output, session) {
 	     ## cat(file=stderr(),is.recursive(pd))
 
          }
+        else if(grepl("PS2109R",input$kitlot)){
+              pd<-req(plateData())
+              pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+	}	
         else{    
         
         pd <- req(plateData())
@@ -415,7 +419,7 @@ shinyServer(function(input, output, session) {
 	   
             pd$Platform=rep("lx200.RUOII",length(pd$Platform)) 	
 	}
-	if(grepl("^LUM",input$kitlot)){
+	if(grepl("PS2109R",input$kitlot)){
 
 
             pd$Platform=rep("lx200.RUOII",length(pd$Platform))

@@ -43,10 +43,12 @@ run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
 
 run.div.from.plate.data<-function(x,input,...)
 {
+      
   
   args<- list(
     x=x,
     batch=input$kitlot,
+    start.from="file",
     qc.check.qcc30 = input$qcc30_filter,
     ...
     
@@ -115,8 +117,14 @@ shinyServer(function(input, output, session) {
         pd <- req(plateData())
         pd$DI <- sprintf( "%.2f", req(din()) )
         pd$div <- sprintf( "%.2f", req(div()) )
-        platform <- pd$Platform[1]
 
+        
+        #if(grepl("^R",input$kitlot)){
+
+        #   pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+        #}
+        platform <- pd$Platform[1]
+       	
         pd2 <- pd[ grep( paste0("^",qn), pd$Sample ),  ]
 
         i <- grep( "BLANK|UNI05|HYC01|DI|div", colnames(pd2), value=TRUE )
@@ -129,10 +137,15 @@ shinyServer(function(input, output, session) {
 
         xr <- probe.data( pd2 )
 
-        if( platform == "Lx200" ) {
+        if( platform == "lx200.RUOII" ) {
             pd3 <- pd3[, colnames(pd3) %!~% "BLANK[12]" ]
             xr <- xr[, colnames(xr) %!in% lx200.missing.probes() ]
         }
+	if( platform == "Lx200" ) {
+            pd3 <- pd3[, colnames(pd3) %!~% "BLANK[12]" ]
+            xr <- xr[, colnames(xr) %!in% lx200.missing.probes() ]
+        }
+
 
         pd3$Total <- sprintf( "%.0f", rowSums(xr, na.rm=TRUE) )
 
@@ -266,10 +279,21 @@ shinyServer(function(input, output, session) {
 
     di <- reactive({
         pd <- req( plateData() )
+	if(grepl("^R",input$kitlot)){
+
+               pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+         
+         }
+
         run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
     })
     bt <- reactive({
         pd <- req( plateData() )
+        if(grepl("^R",input$kitlot)){
+
+               pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+
+         }
 
         b <- gamap.probe.levels.ga(
             x              = pd,
@@ -289,12 +313,22 @@ shinyServer(function(input, output, session) {
     })
     din <- reactive({
         pd <- req( plateData() )
+	if(grepl("^R",input$kitlot)){
+               pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+         }
+
         run.gamap.from.plate.data( x=pd, input)
     })
     
     div<-reactive({
-      bc.file <- req(input_file())
-      run.div.from.plate.data(x=bc.file$datapath,input)
+     # bc.file <- req(input_file())
+      pd <- req( plateData() )
+      if(grepl("^R",input$kitlot)){
+               pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+         }
+
+     # run.div.from.plate.data(x=bc.file$datapath,input)
+       run.div.from.plate.data(x=pd,input)
     })
 
     ## Page 1: DI table, BT and DI-Plot:

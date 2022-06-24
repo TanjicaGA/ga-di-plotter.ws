@@ -383,10 +383,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-71",
+      "Version": "1.6.0-73",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "5d519b41454c049e259ab27858ee81d4"
+      "Hash": "51d47fe46c530411fd642e1d5b8f0b03"
     },
     "ga.diversityindex": {
       "Package": "ga.diversityindex",
@@ -432,10 +432,10 @@
     },
     "ga.software.dd": {
       "Package": "ga.software.dd",
-      "Version": "1.5.0-27",
+      "Version": "1.5.0-28",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "bd25fe0bb9b9fed15706efcaec6e234b"
+      "Hash": "0458be35e47c4244facc35b413c40edc"
     },
     "ga.utils": {
       "Package": "ga.utils",

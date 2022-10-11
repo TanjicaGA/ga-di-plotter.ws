@@ -3,16 +3,16 @@
     "Version": "4.0.5",
     "Repositories": [
       {
-        "Name": "http://cran.ii.uib.no",
+        "Name": "CRAN",
         "URL": "http://cran.ii.uib.no"
       },
       {
-        "Name": "http://cran.fhcrc.org",
-        "URL": "http://cran.fhcrc.org"
+        "Name": "GA",
+        "URL": "http://192.168.3.200/r-packages"
       },
       {
         "Name": "ga-local",
-        "URL": "http://gamap-remote/r-packages"
+        "URL": "http://gamap/r-packages"
       }
     ]
   },
@@ -547,7 +547,7 @@
       "Version": "1.4.2",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "22354a463a7e6697e6cebbe6e8cdcb63"
+      "Hash": "a525aba14184fec243f9eaec62fbed43"
     },
     "ini": {
       "Package": "ini",
@@ -667,13 +667,6 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "18e9c28c1d3ca1560ce30658b22ce104"
-    },
-    "minpack.lm": {
-      "Package": "minpack.lm",
-      "Version": "1.2-1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Hash": "a9ba91cecfe19eb0558a494ebd4e1f1d"
     },
     "modeltools": {
       "Package": "modeltools",
@@ -883,7 +876,7 @@
       "Version": "1.4.4",
       "Source": "Repository",
       "Repository": "CRAN",
-      "Hash": "a4704a2e734ae661e2c741a2bd55c459"
+      "Hash": "bb5996d0bd962d214a11140d77589917"
     },
     "rjson": {
       "Package": "rjson",

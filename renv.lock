@@ -12,7 +12,7 @@
       },
       {
         "Name": "ga-local",
-        "URL": "http://gamap/r-packages"
+        "URL": "http://gamap-remote/r-packages"
       }
     ]
   },
@@ -383,10 +383,10 @@
     },
     "ga.data": {
       "Package": "ga.data",
-      "Version": "1.6.0-83",
+      "Version": "1.6.0-84",
       "Source": "Repository",
       "Repository": "GA",
-      "Hash": "c5cbc0011af50167f835a1ed22f839cb"
+      "Hash": "a88b7fa18b14167ee4de90fd573d33e2"
     },
     "ga.diversityindex": {
       "Package": "ga.diversityindex",

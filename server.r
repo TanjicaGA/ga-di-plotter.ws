@@ -501,6 +501,7 @@ shinyServer(function(input, output, session) {
            encode(digest(a.content, 'sha256'::text), 'hex'::text) AS shasum,
            (a.process_status ->> 'status'::text) AS processed
            FROM (analysis a LEFT JOIN kitlot k ON ((a.kitlot = k.name)))
+           WHERE a.kitlot>'R1910'
            ORDER BY a.rundate")
       
       
@@ -546,10 +547,14 @@ shinyServer(function(input, output, session) {
       qcc30.df$Total=as.numeric(qcc30.df$Total)
       qcc30.df$time<-as.Date(qcc30.df$time , format = "%Y-%m-%d")
       #####PLOTS
-      g1=ggplot(di_qcc23, aes(x= time, y=`din`, color= as.factor(`kitlot`) ))+ geom_point()+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 3, linetype='dotted')+ggtitle("QCC23")
-      g2=ggplot(di_qcc33, aes(x= time, y=`din`, color= as.factor(`kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 2, linetype='dotted')+ggtitle("QCC33")
-      g3=ggplot(HYC.df, aes(x= time, y=`HYC`, color= as.factor(`Kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 1900, linetype='dotted')+ggtitle("QCC30")
-      g4=ggplot(qcc30.df, aes(x= time, y=`Total`, color= as.factor(`Kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 2.2e+5, linetype='dotted')+geom_hline(yintercept = 1e+5, linetype='dotted')+ggtitle("QCC30")
+      g1=ggplot(di_qcc23, aes(x= time, y=`din`, color= as.factor(`kitlot`) ))+ geom_point()+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 3, linetype='dotted')+theme(axis.text=element_text(size=12),
+                                                                                                                                                                                                                               axis.title=element_text(size=14,face="bold"))+ggtitle("QCC23")
+      g2=ggplot(di_qcc33, aes(x= time, y=`din`, color= as.factor(`kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 2, linetype='dotted')+theme(axis.text=element_text(size=12),
+                                                                                                                                                                                                                                                 axis.title=element_text(size=14,face="bold"))+ggtitle("QCC33")
+      g3=ggplot(HYC.df, aes(x= time, y=`HYC`, color= as.factor(`Kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 1900, linetype='dotted')+theme(axis.text=element_text(size=12),
+                                                                                                                                                                                                                                                  axis.title=element_text(size=14,face="bold"))+ggtitle("QCC30")
+      g4=ggplot(qcc30.df, aes(x= time, y=`Total`, color= as.factor(`Kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 2.2e+5, linetype='dotted')+geom_hline(yintercept = 1e+5, linetype='dotted')+theme(axis.text=element_text(size=12),
+                                                                                                                                                                                                                                                                                                         axis.title=element_text(size=14,face="bold"))+ggtitle("QCC30")
       #plot(di_qcc23$time,di_qcc23$din,xlab="Time",ylab="DI",main="QCC23",xaxt="n")
       #axis(1,di_qcc23$time, format(di_qcc23$time, "%m/%Y"))
       plot_grid(g1,g2,g3,g4,labels="AUTO",align="h",ncol=1)

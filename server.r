@@ -15,7 +15,9 @@ suppressPackageStartupMessages({
     library(ga.software)
     library(ga.software.dd)
     library(dplyr)
+    library(ga.biobank)
     library(ga.diversityindex)
+    library(cowplot)
    # library(bettertrace)
     ## load_all("~/git/R-packages/ga.software/")
     ## load_all("~/git/R-packages/ga.software.dd/")
@@ -68,8 +70,84 @@ translate.probes <- function( probes, mode=c("probe","phylum","bacteria") ) {
     )
 }
 
-DEBUG <- FALSE
+data.from.db.rows <- function( db.rows, add.fake.count=TRUE ) {
+  
+  db.rows.raw <- db.rows[ db.rows$datatype == 'raw', ]
+  
+  pr <- probe.data( db.rows.raw )
+  
+  dd <- with( db.rows.raw, {
+    cbind.data.frame(
+      File = filename,
+      Platform = platform,
+      Location = sprintf( "%d(1,%s)", cell.to.well_new(cell), cell ),
+      Sample = sample,
+      Rundate=rundate,
+      pr,
+      Total.Events = NA,
+      Plate = NA,
+      Coord = cell,
+      Well = cell.to.well_new( cell ),
+      Row = match( gsub( "\\d", "", cell ), LETTERS ),
+      Col = as.numeric( gsub( "\\D", "", cell ) ),
+      Kitlot = kitlot,
+      stringsAsFactors = FALSE
+    )
+  })
+  
+  counter <- 0
+  for( f in unique( dd$File ) ) {
+    i <- dd$File %in% f
+    meta <- db.rows.raw$meta[ db.rows.raw$filename == f ][1]
+    if(!is.na(meta)) {
+      
+      meta <- try( fromJSON( meta ), silent=TRUE )
+      
+      if( inherits( meta, "try-error" ) ) {
+        stop( paste( "Could not json parse 'meta' from file ", f ) )
+      }
+      if( "platesetup" %in% names(meta) ) {
+        ps <- as.numeric( meta$platesetup )
+        if( length( ps ) == sum( i ) ) {
+          ps <- ps + counter
+          dd[i,]$Plate <- ps
+          counter <- max( ps )
+        } else {
+          stop( paste( f," platesetup from meta does not match number of samples of the file") )
+        }
+      }
+    }
+    
+    if( all( is.na( dd$Plate[i] ) ) ) {
+      dd$Plate[i] <- counter <- counter + 1
+    }
+    
+  }
+  
+  dd$Plate <- factor( dd$Plate, levels=paste(sort(unique(dd$Plate))) )
+  
+  class( dd ) <- c("gamap.file","data.frame")
+  
+  rownames(dd) <- NULL
+  
+  fake.count <- dd
+  fake.count[, grepl( probe.re( include.technical=TRUE ), colnames(fake.count) ) ] <- 101
+  attr( dd, "count" ) <- fake.count
+  return( dd )
+  
+}
 
+
+cell.to.well_new <- function( cell ) {
+  
+  letter <- gsub( "\\d", "", cell )
+  number <- as.numeric( gsub( "\\D", "", cell ) )
+  
+  (number-1)*8 + match( letter, LETTERS )
+  
+}
+
+DEBUG <- FALSE
 
 ## Define server logic required to draw a histogram
 shinyServer(function(input, output, session) {
@@ -404,6 +482,78 @@ shinyServer(function(input, output, session) {
       v1.DI.div$din <-as.numeric(v1.DI.div$din)
       g=ggplot(v1.DI.div, aes(x= Sample, y=`DiversityIndex`, color= as.factor(`DI`) ))  + geom_point() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=7)) + ylim(0,5) + geom_hline(yintercept = 2.5, linetype='dotted') +scale_color_manual(values=c("green4","green3","yellow3","orange","red"))
       g
+    })
+    output$trending<-renderPlot({
+      
+      dd<-biobank.query("SELECT a.filename,
+           a.study,
+           a.rundate,
+           a.lab,
+           COALESCE(a.real_operator, a.operator) AS operator,
+           a.sample_count,
+           a.kitlot,
+           k.psf,
+           a.platform,
+           a.probe_set,
+           a.scan,
+           a.instrument,
+           ((a.plate_qc ->> 'qc'::text))::boolean AS qc,
+           encode(digest(a.content, 'sha256'::text), 'hex'::text) AS shasum,
+           (a.process_status ->> 'status'::text) AS processed
+           FROM (analysis a LEFT JOIN kitlot k ON ((a.kitlot = k.name)))
+           ORDER BY a.rundate")
+      
+      
+      d <- suppressWarnings(biobank.query(
+        "select b.* from biocode_profiles_v b where b.datatype = 'raw' and b.filename in %s",
+        sql.array(dd$filename)
+      ))
+      
+      disconnect.biobank()
+      
+      o <- order( d$filename, cell.to.well_new(d$cell) )
+      d <- d[o,]
+      
+      di.plate<-data.from.db.rows(d)
+      i.qcc.prefix <- grepl("^R", di.plate$Kitlot)
+      rkits <- subset_deep(di.plate, idx = i.qcc.prefix)
+      
+      i.qcc.prefix2<-grepl("^QCC", rkits$Sample)
+      rkits_qcc <- subset_deep(rkits, idx = i.qcc.prefix2)
+      di_qcc=gamap(rkits_qcc,start.from="file",batch=rkits_qcc$Kitlot,qc.check.qcc30 =FALSE)
+      name <- names(di_qcc)
+      DI.df <- as.data.frame( cbind(name,di_qcc,as.character(rkits_qcc$Rundate),rkits_qcc$Kitlot))
+      colnames(DI.df) <- c("Sample", "din", "time","kitlot")
+      di_qcc23<-DI.df %>% filter( Sample %~% "^QCC23" )
+      di_qcc23$din=as.numeric(di_qcc23$din)
+      di_qcc23$time<-as.Date(di_qcc23$time , format = "%Y-%m-%d")
+      di_qcc33<-DI.df %>% filter( Sample %~% "^QCC33" )
+      di_qcc33$time<-as.Date(di_qcc33$time , format = "%Y-%m-%d")
+      di_qcc33$din=as.numeric(di_qcc33$din)
+      #HYC
+      i.qcc.prefix2<-grepl("^QCC30", rkits$Sample)
+      rkits_qcc <- subset_deep(rkits, idx = i.qcc.prefix2)
+      HYC.df<-as.data.frame(cbind(rkits_qcc$HYC01,as.character(rkits_qcc$Rundate),rkits_qcc$Kitlot))
+      colnames(HYC.df) <- c("HYC", "time", "Kitlot")
+      HYC.df$HYC=as.numeric(HYC.df$HYC)
+      HYC.df$time<-as.Date(HYC.df$time , format = "%Y-%m-%d")
+      #QCC30 Total
+      di.raw <- probe.data( rkits_qcc)
+      di.raw <- di.raw[, !colnames(di.raw) %in% lx200.missing.probes() ]
+      qtot=rowSums(di.raw)
+      qcc30.df<-as.data.frame(cbind(qtot,as.character(rkits_qcc$Rundate),rkits_qcc$Kitlot))
+      colnames(qcc30.df) <- c("Total", "time", "Kitlot")
+      qcc30.df$Total=as.numeric(qcc30.df$Total)
+      qcc30.df$time<-as.Date(qcc30.df$time , format = "%Y-%m-%d")
+      #####PLOTS
+      g1=ggplot(di_qcc23, aes(x= time, y=`din`, color= as.factor(`kitlot`) ))+ geom_point()+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 3, linetype='dotted')+ggtitle("QCC23")
+      g2=ggplot(di_qcc33, aes(x= time, y=`din`, color= as.factor(`kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 2, linetype='dotted')+ggtitle("QCC33")
+      g3=ggplot(HYC.df, aes(x= time, y=`HYC`, color= as.factor(`Kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 1900, linetype='dotted')+ggtitle("QCC30")
+      g4=ggplot(qcc30.df, aes(x= time, y=`Total`, color= as.factor(`Kitlot`) ))+ geom_point(show.legend = FALSE)+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=3, size=7))+ geom_hline(yintercept = 2.2e+5, linetype='dotted')+geom_hline(yintercept = 1e+5, linetype='dotted')+ggtitle("QCC30")
+      #plot(di_qcc23$time,di_qcc23$din,xlab="Time",ylab="DI",main="QCC23",xaxt="n")
+      #axis(1,di_qcc23$time, format(di_qcc23$time, "%m/%Y"))
+      plot_grid(g1,g2,g3,g4,labels="AUTO",align="h",ncol=1)
+      
     })
     output$downloadResults <- downloadHandler(
 

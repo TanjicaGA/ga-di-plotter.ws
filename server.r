@@ -80,14 +80,14 @@ data.from.db.rows <- function( db.rows, add.fake.count=TRUE ) {
     cbind.data.frame(
       File = filename,
       Platform = platform,
-      Location = sprintf( "%d(1,%s)", cell.to.well_new(cell), cell ),
+      Location = sprintf( "%d(1,%s)", cell.to.well_temp(cell), cell ),
       Sample = sample,
       Rundate=rundate,
       pr,
       Total.Events = NA,
       Plate = NA,
       Coord = cell,
-      Well = cell.to.well_new( cell ),
+      Well = cell.to.well_temp( cell ),
       Row = match( gsub( "\\d", "", cell ), LETTERS ),
       Col = as.numeric( gsub( "\\D", "", cell ) ),
       Kitlot = kitlot,
@@ -138,7 +138,7 @@ data.from.db.rows <- function( db.rows, add.fake.count=TRUE ) {
 }
 
 
-cell.to.well_new <- function( cell ) {
+cell.to.well_temp <- function( cell ) {
   
   letter <- gsub( "\\d", "", cell )
   number <- as.numeric( gsub( "\\D", "", cell ) )
@@ -511,7 +511,7 @@ shinyServer(function(input, output, session) {
       
       disconnect.biobank()
       
-      o <- order( d$filename, cell.to.well_new(d$cell) )
+      o <- order( d$filename, cell.to.well_temp(d$cell) )
       d <- d[o,]
       
       di.plate<-data.from.db.rows(d)

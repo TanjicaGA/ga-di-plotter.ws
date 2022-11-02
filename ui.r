@@ -163,7 +163,7 @@ shinyUI(fluidPage(
        ),
        tabPanel(
          
-         "Trending Tool",
+         "Trending",
          fluidRow(
            column(12,
                   plotOutput("trending", height="2000px")

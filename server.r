@@ -18,6 +18,7 @@ suppressPackageStartupMessages({
     library(ga.biobank)
     library(ga.diversityindex)
     library(cowplot)
+    library(vegan)
    # library(bettertrace)
     ## load_all("~/git/R-packages/ga.software/")
     ## load_all("~/git/R-packages/ga.software.dd/")

@@ -147,6 +147,16 @@ cell.to.well_temp <- function( cell ) {
   
 }
 
+plot.pca <- function(pca.obj,d) {
+  ggplot( cbind( d, scores(pca.obj)[] ), aes(x=PC1,y=PC2, label=Samples) ) +
+    pca.axis.labels(pca.obj) +
+    geom_point() +
+    geom_text(hjust=0,vjust=0)+
+    theme_minimal() +
+    ggtitle( paste("PC1,PC2 for normalized data"))+
+    geom_blank()
+}
+
 DEBUG <- FALSE
 
 ## Define server logic required to draw a histogram
@@ -354,7 +364,6 @@ shinyServer(function(input, output, session) {
        x_run
     })
     
-
     di <- reactive({
         pd <- req( plateData() )
 	if(grepl("^R",input$kitlot)){
@@ -365,6 +374,17 @@ shinyServer(function(input, output, session) {
 
         run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
     })
+    bg_data <- reactive({
+        pd <- req( plateData() )
+        if(grepl("^R",input$kitlot)){
+
+               pd$Platform=rep("lx200.RUOII",length(pd$Platform))
+
+         }
+
+        run.gamap.from.plate.data( x=pd, input, stop.at="bg")
+    })
+
     bt <- reactive({
         pd <- req( plateData() )
         if(grepl("^R",input$kitlot)){
@@ -398,6 +418,9 @@ shinyServer(function(input, output, session) {
         run.gamap.from.plate.data( x=pd, input)
     })
     
+  
+
+
     div<-reactive({
      # bc.file <- req(input_file())
       pd <- req( plateData() )
@@ -483,6 +506,22 @@ shinyServer(function(input, output, session) {
       g=ggplot(v1.DI.div, aes(x= Sample, y=`DiversityIndex`, color= as.factor(`DI`) ))  + geom_point() + theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1, size=7)) + ylim(0,5) + geom_hline(yintercept = 2.5, linetype='dotted') +scale_color_manual(values=c("green4","green3","yellow3","orange","red"))
       g
     })
+    output$PCplot<-renderPlot({
+
+
+      bg_data<-bg_data()
+      bg_data[bg_data<5]<-2.5
+      i.qcc <- grepl("^QCC", rownames(bg_data), ignore.case = TRUE)
+      di.plate <- req(plateData())
+      idx <- !i.qcc
+      Samples <- di.plate$Sample[idx]
+      d <- as.data.frame(Samples)
+      signal.data.bg <- as.data.frame(bg_data[idx, ])
+      pca <- prcomp(signal.data.bg)
+      p=plot.pca(pca,d) 
+      p
+    })
+
     output$trending<-renderPlot({
       
       dd<-biobank.query("SELECT a.filename,

@@ -162,6 +162,20 @@ shinyUI(fluidPage(
 
        ),
        tabPanel(
+
+          "PCA plot",
+
+
+
+                fluidRow(
+                  column(12,
+                         plotOutput("PCplot", height="500px")
+                  )
+                )
+
+
+       ),
+       tabPanel(
          
          "Trending",
          fluidRow(

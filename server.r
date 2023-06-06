@@ -570,9 +570,11 @@ shinyServer(function(input, output, session) {
             d <- req(din())
             d <- d[ !grepl("QCC(30|29)",names(d)) ]
             b <- bt()
+            div<-req(div())
+            div <- div[ !grepl("QCC(30|29)",names(div)) ]
             bl <- bacteria.limits()
             colnames(b) <- probe.numbers( bl$Probe )
-            dd <- cbind.data.frame( Sample=names(d), DI=d, b )
+            dd <- cbind.data.frame( Sample=names(d), DI=d, DIV=div,b )
             write.csv( dd, file, row.names=FALSE )
         }
 

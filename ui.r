@@ -66,7 +66,8 @@ shinyUI(fluidPage(
                                column(1,checkboxInput("add_threshold", label="DI border", value=TRUE)),
                                column(1,checkboxInput("unit_scale", label="Unit scale", value=TRUE)),
                                column(1,checkboxInput("log_scale", label="Log scale", value=TRUE)),
-                               column(1,checkboxInput("qcc30_filter", label="QCC30 QC", value=TRUE))
+                               column(1,checkboxInput("qcc30_filter", label="QCC30 QC", value=TRUE)),
+                               column(1,checkboxInput("thalys.model", label="Thalys core", value=FALSE))
                            )
                        )
                        )

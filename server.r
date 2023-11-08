@@ -32,6 +32,7 @@ run.gamap.from.plate.data <- function(x, input, stop.at, ... ) {
         batch = input$kitlot,
         start.from = "file",
         qc.check.qcc30 = input$qcc30_filter,
+        thalys.model = input$thalys.model,
         ...
     )
 
@@ -362,8 +363,23 @@ shinyServer(function(input, output, session) {
                pd$Platform=rep("lx200.RUOII",length(pd$Platform))
          
          }
+        if(input$thalys.model==TRUE & input$kitlot=="R2206"){
+               new_input=gamap(x=pd,start.from="file",stop.at="qcc")
+               args <- list(
+                   x=new_input,
+                   start.from = "bg",
+                   stop.at="dysbiosis",
+                   qc.check.qcc30 = input$qcc30_filter,
+                   thalys.model = input$thalys.model,
+                   scaling=FALSE,
+                   platform=NULL
+               )
 
-        run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
+               do.call(gamap,args)
+             }
+         else{
+               run.gamap.from.plate.data( x=pd, input, stop.at="dysbiosis")
+            }
     })
     bt <- reactive({
         pd <- req( plateData() )
@@ -447,6 +463,7 @@ shinyServer(function(input, output, session) {
                 main = basename( input_file()$name ),
 
                 unit.scale = input$unit_scale,
+                thalys.model=input$thalys.model,
                 plot.names = input$plot_names,
                 log.scale = input$log_scale,
                 add.di.scale = input$add_di_scale,
